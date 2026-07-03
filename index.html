@@ -1,1 +1,1699 @@
-<h1>Hi</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dream4Delivery — Ultra Potency</title>
+<link id="siteFavicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M36 5 16 37h14l-2 22 20-34H34L36 5Z' fill='white'/%3E%3C/svg%3E">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+const BRAND_ICON_URL = 'https://dream4delivery.com/727799034_17932282863320604_1853233446307954187_n.jpg'; // Paste your icon URL here, like: https://your-site.com/icon.ico
+const SUPABASE_URL = 'https://lxsjuypssrpzzccgoeyo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4c2p1eXBzc3JwenpjY2dvZXlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2NTcyOTUsImV4cCI6MjA5ODIzMzI5NX0.TBqee4Ke_7hVhsVbdFV1SSkEUB6dPi9dcBwnsIDfCM8';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const STRIPE_PK = 'pk_live_51ToFo70Z73Yyr8mexdk5yqtBn6wWdiqACbqjKdZBMYt7O62egPU7NPnUbayB66Rk0nluFP9OFYAetGucrQsKmjTT00zUXa73EJ';
+const stripe = Stripe(STRIPE_PK);
+let stripeElements = null;
+let stripeCardElement = null;
+</script>
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd',
+          400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9',
+          800: '#5b21b6', 900: '#4c1d95', 950: '#2e1065'
+        }
+      },
+      fontFamily: {
+        sans: ['Montserrat', 'sans-serif'],
+        serif: ['Playfair Display', 'serif']
+      }
+    }
+  }
+}
+</script>
+<style>
+  @keyframes fadein { 0%{opacity:0;transform:translateY(10px)} 100%{opacity:1;transform:translateY(0)} }
+  @keyframes fadeInScale { 0%{opacity:0;transform:scale(0.95)} 100%{opacity:1;transform:scale(1)} }
+  @keyframes slideInRight { 0%{transform:translateX(100%)} 100%{transform:translateX(0)} }
+  @keyframes slideOutRight { 0%{transform:translateX(0)} 100%{transform:translateX(100%)} }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .animate-fadein { animation: fadein 0.8s ease-out forwards; }
+  .animate-fadein-delay1 { animation: fadein 0.8s ease-out 0.15s forwards; opacity:0; }
+  .animate-fadein-delay2 { animation: fadein 0.8s ease-out 0.3s forwards; opacity:0; }
+  .animate-fadein-delay3 { animation: fadein 0.8s ease-out 0.45s forwards; opacity:0; }
+  .animate-fadeScale { animation: fadeInScale 0.3s ease-out forwards; }
+  .cart-slide-in { animation: slideInRight 0.3s ease-out forwards; }
+  .cart-slide-out { animation: slideOutRight 0.3s ease-in forwards; }
+  .age-blur { filter: blur(20px); pointer-events: none; user-select: none; }
+  html { scroll-behavior: smooth; }
+  body { -webkit-font-smoothing: antialiased; }
+  ::-webkit-scrollbar { width:6px } ::-webkit-scrollbar-track { background:#f5f3ff }
+  ::-webkit-scrollbar-thumb { background:#c4b5fd; border-radius:3px }
+  ::-webkit-scrollbar-thumb:hover { background:#8b5cf6 }
+  .product-card:hover .product-img { transform: scale(1.03); }
+  .toast-enter { animation: fadein 0.4s ease-out forwards; }
+  .spinner { width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block; }
+  #card-element { padding: 12px 14px; border: 1.5px solid #ddd6fe; border-radius: 12px; background: #faf9ff; transition: border-color 0.2s, box-shadow 0.2s; }
+  #card-element.StripeElement--focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+  #card-element.StripeElement--invalid { border-color: #ef4444; }
+  #card-errors { min-height: 20px; }
+  .strain-btn { min-height: 118px; }
+  .strain-btn.selected { border-color: #7c3aed; background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%); color: #4c1d95; font-weight: 600; box-shadow: 0 14px 30px rgba(124,58,237,0.16); transform: translateY(-1px); }
+  .strain-btn.selected .strain-check { opacity: 1; transform: scale(1); }
+  .strain-btn.selected .strain-pill { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+  .thca-badge { background: linear-gradient(135deg, #6d28d9, #10b981); color: white; box-shadow: 0 8px 18px rgba(109,40,217,0.18); }
+  .auth-tab.active { color: #7c3aed; border-bottom-color: #7c3aed; }
+</style>
+</head>
+<body class="font-sans bg-white text-gray-900">
+
+<!-- AGE GATE -->
+<div id="ageGate" class="fixed inset-0 z-[9999] bg-brand-950/95 backdrop-blur-md flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 md:p-10 text-center animate-fadeScale">
+    <div class="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-6">
+      <iconify-icon icon="mdi:shield-check" class="text-brand-600 text-3xl"></iconify-icon>
+    </div>
+    <h2 class="font-serif text-2xl md:text-3xl font-500 mb-3 text-brand-900">Age Verification</h2>
+    <p class="text-gray-500 text-sm font-light leading-relaxed mb-8">
+      You must be at least <strong class="font-medium text-gray-700">21 years of age</strong> to enter this website and purchase products. By clicking "Yes", you confirm you are 21+ and agree to our <a href="javascript:void(0)" class="text-brand-600 underline" onclick="openLegalPopup('tos'); return false;">Terms of Service</a>.
+    </p>
+    <div class="flex flex-col gap-3">
+      <button onclick="verifyAge(true)" class="bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm tracking-wide py-3.5 px-8 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-600/25">YES, I am 21 or older</button>
+      <button onclick="verifyAge(false)" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium text-sm tracking-wide py-3.5 px-8 rounded-xl transition-all duration-300">NO, I am under 21</button>
+    </div>
+    <p class="text-[10px] text-gray-400 mt-6 leading-relaxed">All products comply with the 2018 Farm Bill and contain less than 0.3% Δ9-THC on a dry weight basis.</p>
+  </div>
+</div>
+
+<!-- AGE DENIED -->
+<div id="ageDenied" class="fixed inset-0 z-[9999] bg-brand-950/95 backdrop-blur-md p-4" style="display:none;">
+  <div class="flex items-center justify-center h-full">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 md:p-10 text-center animate-fadeScale">
+      <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <iconify-icon icon="mdi:close-circle" class="text-red-500 text-3xl"></iconify-icon>
+      </div>
+      <h2 class="font-serif text-2xl font-500 mb-3 text-gray-900">Access Denied</h2>
+      <p class="text-gray-500 text-sm font-light leading-relaxed mb-6">You must be 21 or older to access Dream4Delivery.</p>
+      <p class="text-xs text-gray-400">Closing this tab...</p>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toastContainer" class="fixed top-6 right-6 z-[12000] flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- AUTH MODAL -->
+<div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[8500] items-center justify-center p-4" style="display:none;">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm animate-fadeScale overflow-hidden">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-brand-100">
+      <h3 class="font-serif text-lg font-500 text-brand-900">Account</h3>
+      <button onclick="closeAuthModal()" class="w-8 h-8 rounded-lg hover:bg-brand-50 flex items-center justify-center transition-colors"><iconify-icon icon="mdi:close" class="text-lg text-gray-500"></iconify-icon></button>
+    </div>
+    <div class="flex border-b border-brand-100">
+      <button onclick="switchAuthTab('login')" id="authTabLogin" class="auth-tab active flex-1 text-sm font-medium py-3 border-b-2 border-transparent transition-all">Login</button>
+      <button onclick="switchAuthTab('register')" id="authTabRegister" class="auth-tab flex-1 text-sm font-medium py-3 border-b-2 border-transparent text-gray-400 transition-all">Register</button>
+    </div>
+    <!-- Login Form -->
+    <div id="authLoginForm" class="p-6 space-y-4">
+      <div>
+        <label class="text-xs font-medium text-gray-700 mb-1.5 block">Email</label>
+        <input id="authLoginEmail" type="email" placeholder="you@email.com" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all">
+      </div>
+      <div>
+        <label class="text-xs font-medium text-gray-700 mb-1.5 block">Password</label>
+        <input id="authLoginPass" type="password" placeholder="••••••••" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all">
+      </div>
+      <div id="authLoginError" class="text-xs text-red-500 hidden"></div>
+      <button onclick="handleLogin()" id="authLoginBtn" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium tracking-wide py-3.5 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-600/20">Login</button>
+    </div>
+    <!-- Register Form -->
+    <div id="authRegisterForm" class="p-6 space-y-4 hidden">
+      <div>
+        <label class="text-xs font-medium text-gray-700 mb-1.5 block">Full Name</label>
+        <input id="authRegName" type="text" placeholder="John Doe" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all">
+      </div>
+      <div>
+        <label class="text-xs font-medium text-gray-700 mb-1.5 block">Email</label>
+        <input id="authRegEmail" type="email" placeholder="you@email.com" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all">
+      </div>
+      <div>
+        <label class="text-xs font-medium text-gray-700 mb-1.5 block">Password (min 6 chars)</label>
+        <input id="authRegPass" type="password" placeholder="••••••••" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all">
+      </div>
+      <label class="flex items-start gap-2 text-[11px] leading-relaxed text-gray-500">
+        <input id="authLegalAgree" type="checkbox" class="mt-0.5 rounded border-brand-200 text-brand-600 focus:ring-brand-500">
+        <span>I agree to the <a href="javascript:void(0)" onclick="openLegalPopup('tos'); return false;" class="text-brand-600 font-medium underline">Terms of Service</a> and <a href="javascript:void(0)" onclick="openLegalPopup('privacy'); return false;" class="text-brand-600 font-medium underline">Privacy Policy</a>.</span>
+      </label>
+      <div id="authRegError" class="text-xs text-red-500 hidden"></div>
+      <button onclick="handleRegister()" id="authRegBtn" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium tracking-wide py-3.5 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-600/20">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACCOUNT MODAL -->
+<div id="accountModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[8600] hidden items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fadeScale">
+    <div class="px-6 py-5 border-b border-brand-100 bg-brand-50/70 flex items-start justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <div id="accountInitials" class="w-12 h-12 rounded-xl bg-brand-600 text-white flex items-center justify-center text-sm font-semibold">D4</div>
+        <div>
+          <p class="text-[10px] font-medium uppercase tracking-[0.2em] text-brand-500 mb-1">My Account</p>
+          <h3 id="accountName" class="font-serif text-2xl font-500 text-brand-950">Account</h3>
+          <p id="accountEmail" class="text-xs text-gray-500 mt-1"></p>
+        </div>
+      </div>
+      <button type="button" onclick="closeAccountModal()" class="w-10 h-10 rounded-xl bg-white hover:bg-brand-100 border border-brand-100 flex items-center justify-center transition-colors flex-shrink-0" aria-label="Close account">
+        <iconify-icon icon="mdi:close" class="text-xl text-gray-600"></iconify-icon>
+      </button>
+    </div>
+    <div class="p-6 space-y-5">
+      <div class="grid sm:grid-cols-3 gap-3">
+        <div class="bg-brand-50 border border-brand-100 rounded-xl p-4">
+          <p class="text-[10px] uppercase tracking-widest text-brand-500 font-semibold">Member Since</p>
+          <p id="accountCreated" class="text-sm font-medium text-brand-950 mt-2">-</p>
+        </div>
+        <div class="bg-brand-50 border border-brand-100 rounded-xl p-4">
+          <p class="text-[10px] uppercase tracking-widest text-brand-500 font-semibold">Orders</p>
+          <p id="accountOrderCount" class="text-sm font-medium text-brand-950 mt-2">0</p>
+        </div>
+        <div class="bg-brand-50 border border-brand-100 rounded-xl p-4">
+          <p class="text-[10px] uppercase tracking-widest text-brand-500 font-semibold">Total Spent</p>
+          <p id="accountTotalSpent" class="text-sm font-medium text-brand-950 mt-2">$0.00</p>
+        </div>
+      </div>
+
+      <div class="border border-brand-100 rounded-xl overflow-hidden">
+        <div class="px-4 py-3 bg-white border-b border-brand-100 flex items-center justify-between gap-3">
+          <div>
+            <h4 class="text-sm font-semibold text-brand-950">Recent Orders</h4>
+            <p class="text-[11px] text-gray-400">Orders connected to your account</p>
+          </div>
+          <button type="button" onclick="loadAccountOrders()" class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-brand-600 hover:text-brand-800">
+            <iconify-icon icon="mdi:refresh" class="text-sm"></iconify-icon> Refresh
+          </button>
+        </div>
+        <div id="accountOrdersList" class="divide-y divide-brand-100">
+          <div class="p-5 text-sm text-gray-400">Loading orders...</div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button type="button" onclick="closeAccountModal(); document.getElementById('products').scrollIntoView({behavior:'smooth'});" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium tracking-wide py-3 rounded-xl transition-all">Continue Shopping</button>
+        <button type="button" onclick="handleLogout()" class="flex-1 border border-brand-200 hover:border-brand-400 text-brand-700 text-sm font-medium tracking-wide py-3 rounded-xl transition-all">Log Out</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN SITE -->
+<div id="mainSite" class="age-blur">
+
+<!-- NAVIGATION -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-brand-100/60 h-20">
+  <div class="max-w-7xl mx-auto h-full px-6 md:px-10 flex items-center justify-between">
+    <a href="#" class="flex items-center gap-2.5 group">
+      <div class="w-9 h-9 bg-brand-600 rounded-lg flex items-center justify-center group-hover:bg-brand-700 transition-colors duration-300">
+        <iconify-icon icon="mdi:lightning-bolt" class="text-white text-lg"></iconify-icon>
+      </div>
+      <span class="font-serif text-lg font-500 text-brand-900 tracking-tight">Dream4<span class="text-brand-600">Delivery</span></span>
+    </a>
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#products" class="text-xs font-medium uppercase tracking-widest text-gray-500 hover:text-brand-600 transition-colors duration-300">Products</a>
+      <a href="#how-it-works" class="text-xs font-medium uppercase tracking-widest text-gray-500 hover:text-brand-600 transition-colors duration-300">How It Works</a>
+      <button type="button" onclick="openLegalPopup('privacy')" class="text-xs font-medium uppercase tracking-widest text-gray-500 hover:text-brand-600 transition-colors duration-300">Privacy</button>
+      <button type="button" onclick="openLegalPopup('tos')" class="text-xs font-medium uppercase tracking-widest text-gray-500 hover:text-brand-600 transition-colors duration-300">Terms</button>
+      <button id="navAccountBtn" onclick="handleNavAccount()" class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-gray-500 hover:text-brand-600 transition-colors duration-300">
+        <iconify-icon icon="mdi:account-circle-outline" class="text-base"></iconify-icon>
+        <span id="navAccountLabel">Login</span>
+      </button>
+      <button onclick="openCart()" class="relative flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium uppercase tracking-widest px-5 py-2.5 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-brand-600/20">
+        <iconify-icon icon="mdi:cart-outline" class="text-base"></iconify-icon> Cart
+        <span id="cartCountNav" class="absolute -top-2 -right-2 w-5 h-5 bg-brand-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center hidden">0</span>
+      </button>
+    </div>
+    <div class="flex md:hidden items-center gap-3">
+      <button onclick="openCart()" class="relative p-2">
+        <iconify-icon icon="mdi:cart-outline" class="text-xl text-gray-700"></iconify-icon>
+        <span id="cartCountMobile" class="absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center hidden">0</span>
+      </button>
+      <button onclick="toggleMobileMenu()" class="p-2">
+        <iconify-icon icon="mdi:menu" class="text-2xl text-gray-700" id="menuIcon"></iconify-icon>
+      </button>
+    </div>
+  </div>
+  <div id="mobileMenu" class="hidden md:hidden bg-white border-b border-brand-100 shadow-lg">
+    <div class="px-6 py-6 flex flex-col gap-4">
+      <a href="#products" onclick="toggleMobileMenu()" class="text-sm font-medium text-gray-700 hover:text-brand-600 py-2">Products</a>
+      <a href="#how-it-works" onclick="toggleMobileMenu()" class="text-sm font-medium text-gray-700 hover:text-brand-600 py-2">How It Works</a>
+      <button type="button" onclick="toggleMobileMenu(); openLegalPopup('privacy')" class="text-sm font-medium text-gray-700 hover:text-brand-600 py-2 text-left">Privacy Policy</button>
+      <button type="button" onclick="toggleMobileMenu(); openLegalPopup('tos')" class="text-sm font-medium text-gray-700 hover:text-brand-600 py-2 text-left">Terms of Service</button>
+      <button onclick="toggleMobileMenu(); handleNavAccount()" class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-brand-600 py-2 text-left">
+        <iconify-icon icon="mdi:account-circle-outline" class="text-base"></iconify-icon>
+        <span id="mobileAccountLabel">Login / Register</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="min-h-screen relative overflow-hidden flex items-center bg-gradient-to-br from-brand-50 via-white to-brand-100/30">
+  <div class="absolute top-20 right-10 w-72 h-72 bg-brand-200/20 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-20 left-10 w-96 h-96 bg-brand-300/10 rounded-full blur-3xl"></div>
+  <div class="max-w-7xl mx-auto px-6 md:px-10 pt-20 w-full">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div>
+        <div class="animate-fadein">
+          <span class="inline-flex items-center gap-2 bg-brand-100 text-brand-700 text-[11px] font-medium uppercase tracking-[0.15em] px-4 py-2 rounded-full mb-8">
+            <iconify-icon icon="mdi:truck-fast" class="text-sm"></iconify-icon> Zero Interaction Delivery
+          </span>
+        </div>
+        <h1 class="font-serif text-4xl md:text-5xl lg:text-6xl font-500 leading-[1.1] tracking-tight text-brand-950 animate-fadein-delay1">High Potency THCa Delivered<br><span class="text-brand-600">To Your Door</span></h1>
+        <p class="text-gray-500 text-base md:text-lg font-light leading-relaxed mt-6 max-w-lg animate-fadein-delay2">Premium THCa products with zero human interaction. Discreet. Fast. Compliant.</p>
+        <div class="flex flex-wrap gap-4 mt-10 animate-fadein-delay3">
+          <a href="#products" class="bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium tracking-wide px-8 py-4 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-brand-600/25 flex items-center gap-2">Shop Now <iconify-icon icon="mdi:arrow-right" class="text-lg"></iconify-icon></a>
+          <a href="#how-it-works" class="border border-brand-200 hover:border-brand-400 text-brand-700 text-sm font-medium tracking-wide px-8 py-4 rounded-xl transition-all duration-300 hover:bg-brand-50">Learn More</a>
+        </div>
+        <div class="flex flex-wrap items-center gap-6 mt-12 animate-fadein-delay3">
+          <div class="flex items-center gap-2 text-xs text-gray-400"><iconify-icon icon="mdi:shield-check" class="text-brand-500 text-base"></iconify-icon> 2018 Farm Bill Compliant</div>
+          <div class="flex items-center gap-2 text-xs text-gray-400"><iconify-icon icon="mdi:lock" class="text-brand-500 text-base"></iconify-icon> Secure Checkout</div>
+          <div class="flex items-center gap-2 text-xs text-gray-400"><iconify-icon icon="mdi:eye-off" class="text-brand-500 text-base"></iconify-icon> Discreet Packaging</div>
+        </div>
+      </div>
+      <div class="relative animate-fadein-delay2">
+        <div class="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl shadow-brand-900/10">
+          <img src="https://cannabisandglass.com/wp-content/uploads/2021/10/Types-of-Marijuana-Flower.jpg" alt="Dream4Delivery" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-brand-950/30 via-transparent to-transparent"></div>
+        </div>
+        <div class="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-xl p-5 border border-brand-100">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center"><iconify-icon icon="mdi:check-circle" class="text-green-600 text-xl"></iconify-icon></div>
+            <div><p class="text-xs font-medium text-gray-900">Delivery Complete</p><p class="text-[11px] text-gray-400">Zero interaction • Left at door</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products" class="py-24 md:py-32 bg-white">
+  <div class="max-w-7xl mx-auto px-6 md:px-10">
+    <div class="text-center mb-16">
+      <span class="text-[11px] font-medium uppercase tracking-[0.2em] text-brand-500 mb-4 block">Our Products</span>
+      <h2 class="font-serif text-3xl md:text-4xl lg:text-5xl font-500 tracking-tight text-brand-950">Premium THCa Selection</h2>
+      <p class="text-gray-400 text-sm font-light mt-4 max-w-xl mx-auto leading-relaxed">All products are derived from industrial hemp and contain less than 0.3% Δ9-THC on a dry weight basis.</p>
+    </div>
+
+    <!-- DISPOSABLES -->
+    <div class="mb-20">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-8 h-8 bg-brand-100 rounded-lg flex items-center justify-center"><iconify-icon icon="mdi:lightning-bolt" class="text-brand-600 text-base"></iconify-icon></div>
+        <h3 class="font-serif text-xl md:text-2xl font-500 text-brand-900">Disposables</h3>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div class="product-card group bg-white border border-brand-100 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-brand-600/5 transition-all duration-500">
+          <div class="aspect-[4/3] overflow-hidden bg-brand-50 relative cursor-pointer" onclick="openProductDetail('cults-mantras')">
+            <img src="https://venerafactory.com/cdn/shop/files/Inspiration0004-min.png" alt="Cults Mantras" class="product-img w-full h-full object-cover transition-transform duration-700">
+            <div class="absolute top-3 left-3 bg-brand-600 text-white text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg">Disposable</div>
+            <div class="absolute top-3 right-3 bg-brand-950 text-white text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg">2G</div>
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-all duration-300 flex items-center justify-center">
+              <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/95 text-brand-700 text-xs font-semibold px-4 py-2 rounded-full shadow-lg flex items-center gap-1.5"><iconify-icon icon="mdi:eye-outline" class="text-sm"></iconify-icon> Quick View</span>
+            </div>
+          </div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-2 mb-1"><h4 class="font-serif text-lg font-500 text-brand-900">Cults Mantras</h4><div class="flex items-center gap-0.5 flex-shrink-0 pt-0.5"><iconify-icon icon="mdi:star" class="text-amber-400 text-sm"></iconify-icon><span class="text-xs text-gray-500 font-medium">4.8</span></div></div>
+            <p class="text-xs text-gray-400 mb-1">2G Hemp-Derived Disposable Vape</p>
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="thca-badge text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full">THCa 89-93%</span>
+              <span class="text-xs text-brand-500 font-medium">6 strains available</span>
+            </div>
+            <p class="text-2xl font-600 text-brand-900 mb-4">$35</p>
+            <div class="flex gap-2">
+              <button onclick="event.stopPropagation(); window.open(PRODUCTS['cults-mantras'].coaUrl,'_blank')" class="flex items-center gap-1.5 border border-brand-200 text-brand-600 text-xs font-medium px-3 py-2.5 rounded-xl hover:border-brand-500 hover:bg-brand-50 transition-all whitespace-nowrap"><iconify-icon icon="mdi:file-certificate-outline" class="text-sm"></iconify-icon> COA</button>
+              <button onclick="event.stopPropagation(); openProductDetail('cults-mantras')" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 hover:shadow-lg hover:shadow-brand-600/20"><iconify-icon icon="mdi:cart-plus" class="text-sm"></iconify-icon> Select &amp; Order</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card group bg-white border border-brand-100 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-brand-600/5 transition-all duration-500">
+          <div class="aspect-[4/3] overflow-hidden bg-brand-50 relative cursor-pointer" onclick="openProductDetail('venera')">
+            <img src="https://venerafactory.com/cdn/shop/files/3.King_Louis_XIII_Indica_0003.png?v=1767987949&width=1800" alt="Venera" class="product-img w-full h-full object-cover transition-transform duration-700">
+            <div class="absolute top-3 left-3 bg-brand-600 text-white text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg">Disposable</div>
+            <div class="absolute top-3 right-3 bg-brand-950 text-white text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg">2.5G</div>
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-all duration-300 flex items-center justify-center">
+              <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/95 text-brand-700 text-xs font-semibold px-4 py-2 rounded-full shadow-lg flex items-center gap-1.5"><iconify-icon icon="mdi:eye-outline" class="text-sm"></iconify-icon> Quick View</span>
+            </div>
+          </div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-2 mb-1"><h4 class="font-serif text-lg font-500 text-brand-900">Venera</h4><div class="flex items-center gap-0.5 flex-shrink-0 pt-0.5"><iconify-icon icon="mdi:star" class="text-amber-400 text-sm"></iconify-icon><span class="text-xs text-gray-500 font-medium">4.8</span></div></div>
+            <p class="text-xs text-gray-400 mb-1">2.5G Hemp-Derived Disposable Vape</p>
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="thca-badge text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full">THCa 88.4-94%</span>
+              <span class="text-xs text-brand-500 font-medium">11 strains available</span>
+            </div>
+            <p class="text-2xl font-600 text-brand-900 mb-4">$40</p>
+            <div class="flex gap-2">
+              <button onclick="event.stopPropagation(); window.open(PRODUCTS['venera'].coaUrl,'_blank')" class="flex items-center gap-1.5 border border-brand-200 text-brand-600 text-xs font-medium px-3 py-2.5 rounded-xl hover:border-brand-500 hover:bg-brand-50 transition-all whitespace-nowrap"><iconify-icon icon="mdi:file-certificate-outline" class="text-sm"></iconify-icon> COA</button>
+              <button onclick="event.stopPropagation(); openProductDetail('venera')" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 hover:shadow-lg hover:shadow-brand-600/20"><iconify-icon icon="mdi:cart-plus" class="text-sm"></iconify-icon> Select &amp; Order</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARTRIDGES -->
+    <div class="mb-20">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-8 h-8 bg-brand-100 rounded-lg flex items-center justify-center"><iconify-icon icon="mdi:battery-charging" class="text-brand-600 text-base"></iconify-icon></div>
+        <h3 class="font-serif text-xl md:text-2xl font-500 text-brand-900">Cartridges</h3>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="product-card group bg-white border border-brand-100 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-brand-600/5 transition-all duration-500">
+          <div class="aspect-[4/3] overflow-hidden bg-brand-50 relative cursor-pointer" onclick="openProductDetail('habit-paf')">
+            <img src="https://everythingfor420.com/cdn/shop/files/habit-potent-as-f-ck-thc-a-cartridge-1000mg-1200156319.jpg?v=1761674915&width=1100" alt="Habit PAF" class="product-img w-full h-full object-cover transition-transform duration-700">
+            <div class="absolute top-3 left-3 bg-brand-800 text-white text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg">Cartridge</div>
+            <div class="absolute top-3 right-3 bg-brand-950 text-white text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg">1G</div>
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-all duration-300 flex items-center justify-center">
+              <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/95 text-brand-700 text-xs font-semibold px-4 py-2 rounded-full shadow-lg flex items-center gap-1.5"><iconify-icon icon="mdi:eye-outline" class="text-sm"></iconify-icon> Quick View</span>
+            </div>
+          </div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-2 mb-1"><h4 class="font-serif text-base font-500 text-brand-900 leading-snug">Habit — Potent As F#ck</h4><div class="flex items-center gap-0.5 flex-shrink-0 pt-0.5"><iconify-icon icon="mdi:star" class="text-amber-400 text-sm"></iconify-icon><span class="text-xs text-gray-500 font-medium">4.9</span></div></div>
+            <p class="text-xs text-gray-400 mb-1">1G THC-A Hemp-Derived Cartridge</p>
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="thca-badge text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full">THCa 90.2-96.3% ULTRA POTENT</span>
+              <span class="text-xs text-brand-500 font-medium">6 strains available</span>
+            </div>
+            <p class="text-2xl font-600 text-brand-900 mb-4">$30</p>
+            <div class="flex gap-2">
+              <button onclick="event.stopPropagation(); window.open(PRODUCTS['habit-paf'].coaUrl,'_blank')" class="flex items-center gap-1.5 border border-brand-200 text-brand-600 text-xs font-medium px-3 py-2.5 rounded-xl hover:border-brand-500 hover:bg-brand-50 transition-all whitespace-nowrap"><iconify-icon icon="mdi:file-certificate-outline" class="text-sm"></iconify-icon> COA</button>
+              <button onclick="event.stopPropagation(); openProductDetail('habit-paf')" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 hover:shadow-lg hover:shadow-brand-600/20"><iconify-icon icon="mdi:cart-plus" class="text-sm"></iconify-icon> Select &amp; Order</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLOWER -->
+    <div>
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-8 h-8 bg-brand-100 rounded-lg flex items-center justify-center"><iconify-icon icon="mdi:flower" class="text-brand-600"></iconify-icon></div>
+        <h3 class="font-serif text-xl md:text-2xl font-500 text-brand-900">THCa Flower</h3>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="product-card group bg-white border border-brand-100 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-brand-600/5 transition-all duration-500">
+          <div class="aspect-[4/3] overflow-hidden bg-brand-50 relative cursor-pointer" onclick="openProductDetail('tangerine-dream')">
+            <img src="https://i0.wp.com/weedmaps.com/learn/wp-content/uploads/2026/02/image-66.png?fit=640%2C418&ssl=1" alt="angerine DreTam" class="product-img w-full h-full object-cover transition-transform duration-700">
+            <div class="absolute top-3 left-3 bg-green-600 text-white text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg">Flower</div>
+            <div class="absolute top-3 right-3 bg-orange-500 text-white text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg">1 Oz</div>
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-all duration-300 flex items-center justify-center">
+              <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/95 text-brand-700 text-xs font-semibold px-4 py-2 rounded-full shadow-lg flex items-center gap-1.5"><iconify-icon icon="mdi:eye-outline" class="text-sm"></iconify-icon> Quick View</span>
+            </div>
+          </div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-2 mb-1"><h4 class="font-serif text-lg font-500 text-brand-900">Premium Flower Trim</h4><div class="flex items-center gap-0.5 flex-shrink-0 pt-0.5"><iconify-icon icon="mdi:star" class="text-amber-400 text-sm"></iconify-icon><span class="text-xs text-gray-500 font-medium">4.5</span></div></div>
+            <p class="text-xs text-gray-400 mb-1">THCA Trim — 1 Ounce (28g)</p>
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="thca-badge text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full">THCa 28%</span>
+              <span class="text-xs text-brand-500 font-medium">Single strain</span>
+            </div>
+            <p class="text-2xl font-600 text-brand-900 mb-4">$50</p>
+            <div class="flex gap-2">
+              <button onclick="event.stopPropagation(); window.open(PRODUCTS['tangerine-dream'].coaUrl,'_blank')" class="flex items-center gap-1.5 border border-brand-200 text-brand-600 text-xs font-medium px-3 py-2.5 rounded-xl hover:border-brand-500 hover:bg-brand-50 transition-all whitespace-nowrap"><iconify-icon icon="mdi:file-certificate-outline" class="text-sm"></iconify-icon> COA</button>
+              <button onclick="event.stopPropagation(); openProductDetail('tangerine-dream')" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 hover:shadow-lg hover:shadow-brand-600/20"><iconify-icon icon="mdi:cart-plus" class="text-sm"></iconify-icon> View &amp; Order</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" class="py-24 md:py-32 bg-brand-50/50">
+  <div class="max-w-7xl mx-auto px-6 md:px-10">
+    <div class="text-center mb-16">
+      <span class="text-[11px] font-medium uppercase tracking-[0.2em] text-brand-500 mb-4 block">How It Works</span>
+      <h2 class="font-serif text-3xl md:text-4xl lg:text-5xl font-500 tracking-tight text-brand-950">Zero Interaction. <span class="text-brand-600">Zero Hassle.</span></h2>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="bg-white rounded-2xl p-8 border border-brand-100 text-center hover:shadow-xl hover:shadow-brand-600/5 transition-all duration-500 group">
+        <div class="w-14 h-14 bg-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-600 transition-colors duration-300"><iconify-icon icon="mdi:cart-outline" class="text-brand-600 text-2xl group-hover:text-white transition-colors duration-300"></iconify-icon></div>
+        <div class="text-[11px] font-semibold text-brand-400 uppercase tracking-[0.15em] mb-3">Step 01</div>
+        <h3 class="font-serif text-lg font-500 text-brand-900 mb-3">Browse & Add</h3>
+        <p class="text-sm text-gray-400 font-light leading-relaxed">Choose your products and add to cart. Select standard or express shipping.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-8 border border-brand-100 text-center hover:shadow-xl hover:shadow-brand-600/5 transition-all duration-500 group">
+        <div class="w-14 h-14 bg-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-600 transition-colors duration-300"><iconify-icon icon="mdi:credit-card-outline" class="text-brand-600 text-2xl group-hover:text-white transition-colors duration-300"></iconify-icon></div>
+        <div class="text-[11px] font-semibold text-brand-400 uppercase tracking-[0.15em] mb-3">Step 02</div>
+        <h3 class="font-serif text-lg font-500 text-brand-900 mb-3">Secure Checkout</h3>
+        <p class="text-sm text-gray-400 font-light leading-relaxed">Pay securely through Stripe. Your data is encrypted and never stored on our servers.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-8 border border-brand-100 text-center hover:shadow-xl hover:shadow-brand-600/5 transition-all duration-500 group">
+        <div class="w-14 h-14 bg-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-600 transition-colors duration-300"><iconify-icon icon="mdi:package-variant-closed" class="text-brand-600 text-2xl group-hover:text-white transition-colors duration-300"></iconify-icon></div>
+        <div class="text-[11px] font-semibold text-brand-400 uppercase tracking-[0.15em] mb-3">Step 03</div>
+        <h3 class="font-serif text-lg font-500 text-brand-900 mb-3">Discreet Delivery</h3>
+        <p class="text-sm text-gray-400 font-light leading-relaxed">We drop it at your door. No knock, no ring, no interaction.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPLIANCE -->
+<section class="py-16 bg-brand-950">
+  <div class="max-w-4xl mx-auto px-6 md:px-10 text-center">
+    <iconify-icon icon="mdi:shield-check" class="text-brand-400 text-4xl mb-6"></iconify-icon>
+    <h3 class="font-serif text-xl md:text-2xl font-500 text-white mb-4">2018 Farm Bill Compliant</h3>
+    <p class="text-brand-300/70 text-sm font-light leading-relaxed max-w-2xl mx-auto">All Dream4Delivery products are derived from industrial hemp and contain less than 0.3% Delta-9 Tetrahydrocannabinol (Δ9-THC) on a dry weight basis, in accordance with the Agricultural Improvement Act of 2018. Products are not intended to diagnose, treat, cure, or prevent any disease.</p>
+  </div>
+</section>
+
+<!-- PRIVACY POLICY -->
+<section id="privacy" class="hidden py-24 md:py-32 bg-brand-50/40" aria-hidden="true">
+  <div class="max-w-4xl mx-auto px-6 md:px-10">
+    <div class="text-center mb-12">
+      <span class="text-[11px] font-medium uppercase tracking-[0.2em] text-brand-500 mb-4 block">Legal</span>
+      <h2 class="font-serif text-3xl md:text-4xl font-500 tracking-tight text-brand-950">Privacy Policy</h2>
+      <p class="text-xs text-gray-400 mt-3">Last Updated: July 3, 2026</p>
+    </div>
+    <div class="prose prose-sm max-w-none text-gray-600 font-light leading-relaxed space-y-8">
+      <div class="bg-white border border-brand-100 rounded-xl p-6">
+        <h3 class="font-serif text-lg font-500 text-brand-900 mb-3">1. Overview</h3>
+        <p class="text-sm leading-relaxed">Dream4Delivery respects your privacy. This Privacy Policy explains how we collect, use, store, disclose, and protect information when you visit our website, create an account, place an order, contact support, or use our zero-interaction delivery services.</p>
+      </div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">2. Information We Collect</h3><p class="text-sm leading-relaxed">We may collect account details such as name, email, password credentials, phone number, delivery address, order details, age-verification confirmations, payment status, support messages, device data, browser data, usage activity, fraud-prevention data, and any instructions you provide for delivery.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">3. How We Use Information</h3><p class="text-sm leading-relaxed">We use information to create accounts, verify eligibility, process orders, coordinate delivery, communicate updates, provide customer support, prevent fraud, protect website security, comply with legal obligations, improve our services, and maintain business records.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">4. Payments and Service Providers</h3><p class="text-sm leading-relaxed">Payment card information is processed by Stripe. Dream4Delivery does not intentionally store full card numbers in this website. We may share information with vendors such as Supabase, Stripe, delivery partners, analytics providers, hosting providers, communications tools, compliance vendors, and professional advisors when needed to operate the service.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">5. Local Storage, Cookies, and Security</h3><p class="text-sm leading-relaxed">This page uses browser storage for cart and login status. Passwords are hashed before being stored in the account database. We use reasonable safeguards designed to protect personal information, but no website, database, browser storage, or transmission method can be guaranteed to be completely secure.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">6. Sharing and Legal Compliance</h3><p class="text-sm leading-relaxed">We may disclose information when required by law, to protect rights and safety, to investigate fraud or misuse, to enforce our Terms, or as part of a business transaction such as a merger, acquisition, financing, or sale of assets.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">7. Your Choices and Privacy Rights</h3><p class="text-sm leading-relaxed">You may contact us to request access, correction, deletion, or a copy of personal information associated with your account. Depending on your location, you may have additional rights to know, delete, correct, limit certain uses, opt out of sale or sharing, and avoid discrimination for exercising privacy rights. We do not sell personal information in the ordinary meaning of that term.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">8. Children and Age Restrictions</h3><p class="text-sm leading-relaxed">Dream4Delivery is intended only for adults who are at least 21 years old. We do not knowingly collect personal information from children under 13 or knowingly sell products to anyone under 21. If you believe a minor provided information, contact us so we can review and delete it where appropriate.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">9. Retention</h3><p class="text-sm leading-relaxed">We keep information for as long as reasonably needed to provide services, comply with law, resolve disputes, enforce agreements, prevent fraud, and maintain business records. Cart and session data may remain in your browser until cleared.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">10. Contact</h3><p class="text-sm leading-relaxed">For privacy requests or questions, contact <span class="text-brand-600 font-medium">privacy@dream4delivery.com</span> or <span class="text-brand-600 font-medium">support@dream4delivery.com</span>.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TERMS OF SERVICE -->
+<section id="tos" class="hidden py-24 md:py-32 bg-white" aria-hidden="true">
+  <div class="max-w-4xl mx-auto px-6 md:px-10">
+    <div class="text-center mb-12">
+      <span class="text-[11px] font-medium uppercase tracking-[0.2em] text-brand-500 mb-4 block">Legal</span>
+      <h2 class="font-serif text-3xl md:text-4xl font-500 tracking-tight text-brand-950">Terms of Service</h2>
+      <p class="text-xs text-gray-400 mt-3">Last Updated: July 3, 2026</p>
+    </div>
+    <div class="prose prose-sm max-w-none text-gray-600 font-light leading-relaxed space-y-8">
+      <div class="bg-brand-50/50 border border-brand-100 rounded-xl p-6">
+        <h3 class="font-serif text-lg font-500 text-brand-900 mb-3">1. Agreement to Terms</h3>
+        <p class="text-sm leading-relaxed">By accessing or using the Dream4Delivery website, you agree to be bound by these Terms of Service. You must be at least twenty-one (21) years of age to use this Site and purchase any products.</p>
+      </div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">2. Age Restriction</h3><p class="text-sm leading-relaxed">All users and purchasers must be twenty-one (21) years of age or older. Dream4Delivery reserves the right to request age verification at any time.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">3. 2018 Farm Bill Compliance</h3><p class="text-sm leading-relaxed">All products contain less than 0.3% Δ9-THC on a dry weight basis. THCA is a naturally occurring cannabinoid not classified as a controlled substance when derived from compliant hemp. COA documentation is available for all products.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">4. State & Local Law Disclaimer</h3><p class="text-sm leading-relaxed">Laws vary by state, county, and municipality. It is the customer's responsibility to determine legality in their jurisdiction.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">5. Payment — Stripe Integration</h3><p class="text-sm leading-relaxed">All payments are processed securely through Stripe, Inc. Dream4Delivery does not store or have access to your full credit card information. Payment data is handled by Stripe's PCI-DSS compliant infrastructure. By completing a purchase, you agree to Stripe's Terms of Service.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">6. Zero Interaction Delivery</h3><p class="text-sm leading-relaxed">All orders are delivered without direct human interaction. The customer assumes all risk for packages once delivered. Dream4Delivery is not responsible for lost, stolen, or misdelivered packages.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">7. Returns & Refunds</h3><p class="text-sm leading-relaxed">All sales are final. Contact us within 48 hours of delivery with photographic evidence for damaged/defective products.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">8. Accounts and Security</h3><p class="text-sm leading-relaxed">You agree to provide accurate account information, protect your login credentials, and promptly notify us of unauthorized account activity. You are responsible for activity under your account unless caused by Dream4Delivery's proven breach of these Terms.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">9. Orders, Payments, and Availability</h3><p class="text-sm leading-relaxed">All orders are subject to acceptance, product availability, compliance review, payment authorization, delivery coverage, and fraud checks. Prices, product availability, delivery fees, taxes, discounts, and estimated delivery times may change at any time before an order is accepted.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">10. No Medical Claims</h3><p class="text-sm leading-relaxed">Dream4Delivery products are not intended to diagnose, treat, cure, or prevent any disease. Product descriptions are for general information only and are not medical, legal, or professional advice. Consult a qualified professional before using hemp products, especially if you are pregnant, nursing, taking medication, or have a medical condition.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">11. Prohibited Conduct</h3><p class="text-sm leading-relaxed">You may not use the service for illegal activity, resale without authorization, underage access, false identity information, payment fraud, harassment, abuse, scraping, reverse engineering, interference with the website, or attempts to bypass compliance controls.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">12. Intellectual Property</h3><p class="text-sm leading-relaxed">Dream4Delivery names, logos, website design, text, product presentation, software, and related materials are owned by Dream4Delivery or its licensors. You may not copy, distribute, modify, or exploit them except as allowed by law or written permission.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">13. Disclaimers and Limitation of Liability</h3><p class="text-sm leading-relaxed">The website and services are provided as is and as available to the fullest extent allowed by law. Dream4Delivery does not guarantee uninterrupted service, exact delivery times, product availability, or that the website will be error-free. To the fullest extent allowed by law, Dream4Delivery will not be liable for indirect, incidental, special, consequential, exemplary, or punitive damages.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">14. Indemnification</h3><p class="text-sm leading-relaxed">You agree to defend, indemnify, and hold Dream4Delivery harmless from claims, losses, liabilities, damages, costs, and expenses arising from your misuse of the service, violation of these Terms, violation of law, or infringement of another person's rights.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">15. Changes to Terms</h3><p class="text-sm leading-relaxed">Dream4Delivery may update these Terms from time to time. The updated version will be posted with a new last-updated date. Continued use of the service after updates means you accept the updated Terms.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">16. Contact</h3><p class="text-sm leading-relaxed">For questions, contact <span class="text-brand-600 font-medium">support@dream4delivery.com</span>.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-brand-950 py-16">
+  <div class="max-w-7xl mx-auto px-6 md:px-10">
+    <div class="grid md:grid-cols-4 gap-10 mb-12">
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-2.5 mb-4">
+          <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center"><iconify-icon icon="mdi:lightning-bolt" class="text-white text-sm"></iconify-icon></div>
+          <span class="font-serif text-lg font-500 text-white tracking-tight">Dream4<span class="text-brand-400">Delivery</span></span>
+        </div>
+        <p class="text-brand-300/50 text-sm font-light leading-relaxed max-w-sm">Premium THCa products delivered with free delivery insurance. Compliant, discreet, and fast.</p>
+      </div>
+      <div>
+        <h4 class="text-xs font-medium uppercase tracking-widest text-brand-400 mb-4">Quick Links</h4>
+        <div class="space-y-3">
+          <a href="#products" class="block text-sm text-brand-300/60 hover:text-white transition-colors">Products</a>
+          <a href="#how-it-works" class="block text-sm text-brand-300/60 hover:text-white transition-colors">How It Works</a>
+          <button type="button" onclick="openLegalPopup('privacy')" class="block text-sm text-brand-300/60 hover:text-white transition-colors text-left">Privacy Policy</button>
+          <button type="button" onclick="openLegalPopup('tos')" class="block text-sm text-brand-300/60 hover:text-white transition-colors text-left">Terms of Service</button>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-xs font-medium uppercase tracking-widest text-brand-400 mb-4">Legal</h4>
+        <div class="space-y-3">
+          <p class="text-sm text-brand-300/60">2018 Farm Bill Compliant</p>
+          <p class="text-sm text-brand-300/60">&lt;0.3% Δ9-THC</p>
+          <p class="text-sm text-brand-300/60">21+ Only</p>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-brand-800/50 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-[11px] text-brand-300/40">&copy; 2026 Dream4Delivery. All rights reserved.</p>
+      <div class="flex flex-wrap items-center justify-center md:justify-end gap-3">
+        <button type="button" onclick="openLegalPopup('privacy')" class="inline-flex items-center justify-center min-h-[42px] px-5 py-2.5 rounded-xl border border-brand-700 text-xs font-medium uppercase tracking-widest text-brand-100 hover:bg-brand-800 hover:border-brand-500 transition-colors">Privacy Policy</button>
+        <button type="button" onclick="openLegalPopup('tos')" class="inline-flex items-center justify-center min-h-[42px] px-5 py-2.5 rounded-xl border border-brand-700 text-xs font-medium uppercase tracking-widest text-brand-100 hover:bg-brand-800 hover:border-brand-500 transition-colors">Terms of Service</button>
+      </div>
+    </div>
+    <p class="text-[10px] text-brand-300/30 text-center md:text-right mt-5">These products are not intended to diagnose, treat, cure, or prevent any disease.</p>
+  </div>
+</footer>
+
+</div><!-- end mainSite -->
+
+<!-- LEGAL POPUP -->
+<div id="legalPopup" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] hidden items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[88vh] flex flex-col animate-fadeScale overflow-hidden">
+    <div class="flex items-start justify-between gap-4 px-6 py-5 border-b border-brand-100 bg-brand-50/70">
+      <div>
+        <p id="legalPopupEyebrow" class="text-[10px] font-medium uppercase tracking-[0.2em] text-brand-500 mb-1">Legal</p>
+        <h3 id="legalPopupTitle" class="font-serif text-2xl font-500 text-brand-950">Legal</h3>
+        <p id="legalPopupUpdated" class="text-xs text-gray-400 mt-1"></p>
+      </div>
+      <button type="button" onclick="closeLegalPopup()" class="w-10 h-10 rounded-xl bg-white hover:bg-brand-100 border border-brand-100 flex items-center justify-center transition-colors flex-shrink-0" aria-label="Close legal popup">
+        <iconify-icon icon="mdi:close" class="text-xl text-gray-600"></iconify-icon>
+      </button>
+    </div>
+    <div id="legalPopupBody" class="overflow-y-auto px-6 py-6 text-gray-600 font-light leading-relaxed space-y-8"></div>
+    <div class="border-t border-brand-100 px-6 py-4 bg-white flex justify-end">
+      <button type="button" onclick="closeLegalPopup()" class="bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium tracking-wide px-6 py-3 rounded-xl transition-all duration-300">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- CART SIDEBAR -->
+<div id="cartOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[7000] hidden" onclick="closeCart()"></div>
+<div id="cartSidebar" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white z-[7001] shadow-2xl hidden flex-col">
+  <div class="flex items-center justify-between px-6 py-5 border-b border-brand-100">
+    <h3 class="font-serif text-xl font-500 text-brand-900">Your Cart</h3>
+    <button onclick="closeCart()" class="w-9 h-9 rounded-lg hover:bg-brand-50 flex items-center justify-center transition-colors"><iconify-icon icon="mdi:close" class="text-xl text-gray-500"></iconify-icon></button>
+  </div>
+  <div id="cartItems" class="flex-1 overflow-y-auto px-6 py-4">
+    <div id="emptyCart" class="flex flex-col items-center justify-center h-full text-center">
+      <iconify-icon icon="mdi:cart-outline" class="text-5xl text-brand-200 mb-4"></iconify-icon>
+      <p class="text-gray-400 text-sm font-light">Your cart is empty</p>
+      <button onclick="closeCart()" class="mt-4 text-brand-600 text-sm font-medium hover:underline">Continue Shopping</button>
+    </div>
+    <div id="cartItemsList" class="space-y-4 hidden"></div>
+  </div>
+  <div id="cartFooter" class="hidden border-t border-brand-100 px-6 py-5 bg-brand-50/30">
+    <div class="space-y-2 mb-5">
+      <div class="flex justify-between text-sm"><span class="text-gray-500">Subtotal</span><span id="cartSubtotal" class="font-medium text-brand-900">$0.00</span></div>
+      <span class="text-gray-400 text-xs italic">Shipping calculated at checkout</span>
+    </div>
+    <button onclick="openCheckout()" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium tracking-wide py-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-600/25 flex items-center justify-center gap-2">
+      <iconify-icon icon="mdi:lock" class="text-base"></iconify-icon> Proceed to Checkout
+    </button>
+    <p class="text-[10px] text-gray-400 text-center mt-3">Powered by Stripe &middot; Secure Payment</p>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div id="checkoutModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[8000] hidden items-center justify-center p-2 md:p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[95vh] md:max-h-[90vh] overflow-y-auto animate-fadeScale">
+    <div class="px-5 py-4 border-b border-brand-100 flex items-center justify-between sticky top-0 bg-white z-10 rounded-t-2xl">
+      <div class="flex items-center gap-3">
+        <button id="coBackBtn" onclick="coGoBack()" class="hidden w-8 h-8 rounded-lg hover:bg-brand-50 items-center justify-center transition-colors"><iconify-icon icon="mdi:arrow-left" class="text-lg text-gray-500"></iconify-icon></button>
+        <h3 id="coTitle" class="font-serif text-xl font-500 text-brand-900">Checkout</h3>
+      </div>
+      <button onclick="closeCheckout()" class="w-9 h-9 rounded-lg hover:bg-brand-50 flex items-center justify-center transition-colors"><iconify-icon icon="mdi:close" class="text-xl text-gray-500"></iconify-icon></button>
+    </div>
+    <div class="px-5 pt-4 flex items-center gap-1">
+      <div id="coStep1Dot" class="flex items-center gap-1.5"><div class="w-6 h-6 rounded-full bg-brand-600 text-white text-[11px] font-bold flex items-center justify-center">1</div><span class="text-xs font-medium text-brand-700 hidden sm:inline">Your Info</span></div>
+      <div class="flex-1 h-px bg-brand-100 mx-1"></div>
+      <div id="coStep2Dot" class="flex items-center gap-1.5 opacity-40"><div class="w-6 h-6 rounded-full bg-brand-600 text-white text-[11px] font-bold flex items-center justify-center">2</div><span class="text-xs font-medium text-brand-700 hidden sm:inline">Shipping</span></div>
+      <div class="flex-1 h-px bg-brand-100 mx-1"></div>
+      <div id="coStep3Dot" class="flex items-center gap-1.5 opacity-40"><div class="w-6 h-6 rounded-full bg-brand-600 text-white text-[11px] font-bold flex items-center justify-center">3</div><span class="text-xs font-medium text-brand-700 hidden sm:inline">Payment</span></div>
+    </div>
+
+    <!-- STEP 1 -->
+    <div id="coStep1" class="p-5 space-y-4">
+      <div id="checkoutLoggedInBanner" class="hidden bg-brand-50 border border-brand-200 rounded-xl p-3 flex items-center gap-3">
+        <div class="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center flex-shrink-0"><iconify-icon icon="mdi:account" class="text-white text-sm"></iconify-icon></div>
+        <div><p class="text-xs font-medium text-brand-900" id="checkoutLoggedInName"></p><p class="text-[10px] text-brand-500" id="checkoutLoggedInEmail"></p></div>
+      </div>
+      <div id="checkoutAccountRequired" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-4">
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0"><iconify-icon icon="mdi:account-lock-outline" class="text-amber-600 text-lg"></iconify-icon></div>
+          <div class="flex-1">
+            <p class="text-xs font-semibold text-amber-900">Account required before purchase</p>
+            <p class="text-[11px] text-amber-700 mt-1 leading-relaxed">Create an account or log in before continuing to shipping and payment.</p>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <button type="button" onclick="openCheckoutAuth('register')" class="bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-semibold px-4 py-2 rounded-lg transition-colors">Create Account</button>
+              <button type="button" onclick="openCheckoutAuth('login')" class="bg-white hover:bg-amber-100 text-amber-800 border border-amber-200 text-[11px] font-semibold px-4 py-2 rounded-lg transition-colors">Login</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div><label class="text-xs font-medium text-gray-700 mb-1.5 block">Full Name *</label><input id="coName" type="text" placeholder="John Doe" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all"></div>
+      <div><label class="text-xs font-medium text-gray-700 mb-1.5 block">Email *</label><input id="coEmail" type="email" placeholder="you@email.com" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all"></div>
+      <div><label class="text-xs font-medium text-gray-700 mb-1.5 block">Phone</label><input id="coPhone" type="tel" placeholder="(555) 123-4567" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all"></div>
+      <div><label class="text-xs font-medium text-gray-700 mb-1.5 block">Street Address *</label><input id="coAddress" type="text" placeholder="123 Main St, Apt 4B" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all"></div>
+      <div class="grid grid-cols-3 gap-3">
+        <div><label class="text-xs font-medium text-gray-700 mb-1.5 block">City *</label><input id="coCity" type="text" placeholder="City" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all"></div>
+        <div><label class="text-xs font-medium text-gray-700 mb-1.5 block">State *</label><input id="coState" type="text" placeholder="CA" maxlength="2" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all uppercase"></div>
+        <div><label class="text-xs font-medium text-gray-700 mb-1.5 block">ZIP *</label><input id="coZip" type="text" placeholder="90210" maxlength="10" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all"></div>
+      </div>
+      <button onclick="coGoStep(2)" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium tracking-wide py-3.5 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-600/20 flex items-center justify-center gap-2">Continue to Shipping <iconify-icon icon="mdi:arrow-right" class="text-base"></iconify-icon></button>
+    </div>
+
+    <!-- STEP 2 -->
+    <div id="coStep2" class="p-5 space-y-4 hidden">
+      <div class="bg-brand-50/60 border border-brand-100 rounded-xl p-4 space-y-3">
+        <label class="text-xs font-semibold text-brand-800 uppercase tracking-wider block">Select Shipping Method</label>
+        <label class="flex items-center gap-3 p-3 border border-brand-200 rounded-xl cursor-pointer hover:border-brand-400 transition-all has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50">
+          <input type="radio" name="shipping" value="standard" checked class="accent-brand-600 w-4 h-4">
+          <div class="flex-1"><p class="text-sm font-medium text-gray-900">Standard Shipping</p><p class="text-[11px] text-gray-400">5–7 business days</p></div>
+          <span class="text-sm font-semibold text-brand-900">$5.00</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 border border-brand-200 rounded-xl cursor-pointer hover:border-brand-400 transition-all has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50">
+          <input type="radio" name="shipping" value="express" class="accent-brand-600 w-4 h-4">
+          <div class="flex-1"><p class="text-sm font-medium text-gray-900">Express Shipping</p><p class="text-[11px] text-gray-400">2–3 business days</p></div>
+          <span class="text-sm font-semibold text-brand-900">$10.00</span>
+        </label>
+      </div>
+      <div class="border border-brand-100 rounded-xl p-4 space-y-2">
+        <p class="text-xs font-semibold text-brand-800 uppercase tracking-wider mb-3">Order Summary</p>
+        <div id="coOrderItems"></div>
+        <div class="border-t border-brand-100 pt-2 mt-2 space-y-1.5">
+          <div class="flex justify-between text-sm"><span class="text-gray-500">Subtotal</span><span id="coSubtotal" class="font-medium">$0.00</span></div>
+          <div class="flex justify-between text-sm"><span class="text-gray-500">Shipping</span><span id="coShipping" class="font-medium">$5.00</span></div>
+          <div class="flex justify-between text-base font-semibold pt-1 border-t border-brand-100"><span class="text-brand-900">Total</span><span id="coTotal" class="text-brand-900">$0.00</span></div>
+        </div>
+      </div>
+      <button onclick="coGoStep(3)" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium tracking-wide py-3.5 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-600/20 flex items-center justify-center gap-2">Continue to Payment <iconify-icon icon="mdi:arrow-right" class="text-base"></iconify-icon></button>
+      <button onclick="coGoStep(1)" class="w-full text-gray-500 hover:text-brand-600 text-xs font-medium py-2 transition-colors flex items-center justify-center gap-1"><iconify-icon icon="mdi:arrow-left" class="text-sm"></iconify-icon> Back</button>
+    </div>
+
+    <!-- STEP 3 -->
+    <div id="coStep3" class="p-5 space-y-4 hidden">
+      <div class="bg-brand-50/60 border border-brand-100 rounded-xl p-4 space-y-3">
+        <p class="text-xs font-semibold text-brand-800 uppercase tracking-wider">Card Details</p>
+        <div id="card-element"></div>
+        <div id="card-errors" class="text-xs text-red-500"></div>
+        <div class="flex items-center gap-2 text-[11px] text-gray-400 pt-1">
+          <iconify-icon icon="mdi:lock" class="text-brand-500 text-sm"></iconify-icon>
+          Secured by Stripe — your card info never touches our servers
+        </div>
+      </div>
+      <div class="border border-brand-100 rounded-xl p-4">
+        <div class="flex justify-between text-base font-semibold"><span class="text-brand-900">Total Charge</span><span id="coFinalTotal" class="text-brand-900">$0.00</span></div>
+      </div>
+      <button id="coPayBtn" onclick="processStripePayment()" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium tracking-wide py-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-600/25 flex items-center justify-center gap-2">
+        <iconify-icon icon="mdi:lock" class="text-base"></iconify-icon>
+        <span id="coPayBtnText">Pay Now</span>
+      </button>
+      <button onclick="coGoStep(2)" class="w-full text-gray-500 hover:text-brand-600 text-xs font-medium py-2 transition-colors flex items-center justify-center gap-1"><iconify-icon icon="mdi:arrow-left" class="text-sm"></iconify-icon> Back to Shipping</button>
+      <p class="text-[10px] text-gray-400 text-center">By placing this order you agree to our <a href="javascript:void(0)" onclick="openLegalPopup('tos'); return false;" class="text-brand-600 underline">Terms of Service</a> and <a href="javascript:void(0)" onclick="openLegalPopup('privacy'); return false;" class="text-brand-600 underline">Privacy Policy</a>.</p>
+    </div>
+
+    <!-- SUCCESS -->
+    <div id="coStepSuccess" class="p-8 text-center hidden">
+      <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <iconify-icon icon="mdi:check-circle" class="text-green-600 text-5xl"></iconify-icon>
+      </div>
+      <h3 class="font-serif text-2xl font-500 text-brand-900 mb-2">Order Confirmed!</h3>
+      <p class="text-sm text-gray-500 font-light mb-2">Thank you for your order.</p>
+      <p class="text-xs text-gray-400 mb-6">Your order has been received and will be delivered with zero interaction.</p>
+      <p class="text-xs text-brand-600 font-medium mb-6">Order #<span id="coOrderId"></span></p>
+      <button onclick="closeCheckout(); location.reload();" class="bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-8 py-3.5 rounded-xl transition-all duration-300">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div id="productModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[7500] hidden items-center justify-center p-2 md:p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-fadeScale">
+    <div class="relative">
+      <img id="pmImage" src="" alt="" class="w-full aspect-[4/3] object-cover rounded-t-2xl">
+      <button onclick="closeProductModal()" class="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-colors"><iconify-icon icon="mdi:close" class="text-lg text-gray-700"></iconify-icon></button>
+    </div>
+    <div class="p-5 space-y-4">
+      <div>
+        <h3 id="pmName" class="font-serif text-xl font-500 text-brand-900"></h3>
+        <p id="pmDesc" class="text-xs text-gray-400 mt-1"></p>
+        <div id="pmThcaBadge" class="inline-flex thca-badge text-[10px] font-semibold uppercase tracking-wider px-3 py-1.5 rounded-full mt-3"></div>
+      </div>
+      <div>
+        <div class="flex items-end justify-between gap-3 mb-3">
+          <div>
+            <p class="text-xs font-semibold text-gray-800">Select Strain *</p>
+            <p class="text-[11px] text-gray-400 mt-0.5">Choose by flavor, aroma, and overall profile.</p>
+          </div>
+          <span class="text-[10px] uppercase tracking-widest text-brand-500 font-semibold">Profile</span>
+        </div>
+        <div id="pmStrains" class="grid sm:grid-cols-2 gap-3"></div>
+      </div>
+      <div>
+        <p class="text-xs font-medium text-gray-700 mb-2">Quantity</p>
+        <div class="flex items-center gap-3">
+          <button onclick="pmChangeQty(-1)" class="w-9 h-9 border border-brand-200 rounded-lg flex items-center justify-center hover:bg-brand-50 transition-colors"><iconify-icon icon="mdi:minus" class="text-sm text-gray-600"></iconify-icon></button>
+          <span id="pmQty" class="text-sm font-semibold text-brand-900 w-6 text-center">1</span>
+          <button onclick="pmChangeQty(1)" class="w-9 h-9 border border-brand-200 rounded-lg flex items-center justify-center hover:bg-brand-50 transition-colors"><iconify-icon icon="mdi:plus" class="text-sm text-gray-600"></iconify-icon></button>
+          <span id="pmPrice" class="ml-auto text-lg font-semibold text-brand-900"></span>
+        </div>
+      </div>
+      <button id="pmAddBtn" onclick="pmAddToCart()" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold py-3.5 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-600/20 flex items-center justify-center gap-2">
+        <iconify-icon icon="mdi:cart-plus" class="text-base"></iconify-icon> Add to Cart
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- ALL APPLICATION JAVASCRIPT                              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script>
+// ─── GLOBAL STATE ───
+let cart = JSON.parse(localStorage.getItem('d4d_cart') || '[]');
+let currentUser = JSON.parse(localStorage.getItem('d4d_user') || 'null');
+let coCurrentTotal = 0;
+let coCurrentOrderId = '';
+let coCurrentStep = 1;
+let pmCurrentProduct = null;
+let pmSelectedStrain = null;
+let pmQty = 1;
+let legalPopupBodyWasLocked = false;
+let accountOrders = [];
+
+// ─── PRODUCT DATA ───
+const PRODUCTS = {
+  'cults-mantras': {
+    id:'cults-mantras', name:'Cults Mantras', desc:'2G Hemp-Derived Disposable Vape', price:35, thca:'89-93%',
+    image:'https://venerafactory.com/cdn/shop/files/Inspiration0004-min.png', coaUrl:'#',
+    strains:[
+      {name:'Blue Dream', thca:63, note:'Bright berry notes with a smooth, easygoing daytime feel.'},
+      {name:'OG Kush', thca:66, note:'Earthy pine and gas with a classic bold finish.'},
+      {name:'Purple Haze', thca:64, note:'Sweet grape-like flavor with a lively, expressive profile.'},
+      {name:'Sour Diesel', thca:65, note:'Sharp citrus fuel aroma with a crisp, punchy taste.'},
+      {name:'White Widow', thca:62, note:'Clean herbal spice with a balanced, familiar character.'},
+      {name:'Granddaddy Purple', thca:61, note:'Deep berry and floral notes with a rich, mellow profile.'}
+    ]
+  },
+  'venera': {
+    id:'venera', name:'Venera', desc:'2.5G Hemp-Derived Disposable Vape', price:40, thca:'88.4-94%',
+    image:'https://venerafactory.com/cdn/shop/files/3.King_Louis_XIII_Indica_0003.png?v=1767987949&width=1800', coaUrl:'#',
+    strains:[
+      {name:'Gelato', thca:74, note:'Creamy citrus-dessert flavor with a smooth, rounded pull.'},
+      {name:'Wedding Cake', thca:76, note:'Vanilla cake richness with a sweet earthy finish.'},
+      {name:'Runtz', thca:75, note:'Candy-forward fruit notes with a soft, sugary aroma.'},
+      {name:'Zkittlez', thca:72, note:'Tropical candy flavor with a bright fruit-bowl profile.'},
+      {name:'Pineapple Express', thca:70, note:'Juicy pineapple and citrus with a sunny, clean taste.'},
+      {name:'Mimosa', thca:71, note:'Orange zest and champagne-like sweetness with a crisp finish.'},
+      {name:'Tropicana Cookies', thca:73, note:'Tangy citrus cookie flavor with a loud orange nose.'},
+      {name:'Lemon Cherry Gelato', thca:76, note:'Sweet cherry cream layered with a lemon-candy snap.'},
+      {name:'Watermelon Zkittlez', thca:72, note:'Watermelon candy sweetness with a juicy, smooth finish.'},
+      {name:'Blueberry Muffin', thca:70, note:'Warm blueberry bakery notes with a soft creamy exhale.'},
+      {name:'Strawberry Cough', thca:71, note:'Fresh strawberry sweetness with a light herbal edge.'}
+    ]
+  },
+  'habit-paf': {
+    id:'habit-paf', name:'Habit — Potent As F#ck', desc:'1G THC-A Hemp-Derived Cartridge', price:30,
+    image:'https://everythingfor420.com/cdn/shop/files/habit-potent-as-f-ck-thc-a-cartridge-1000mg-1200156319.jpg?v=1761674915&width=1100', coaUrl:'#',
+    thca:'90.2-96.3% ULTRA POTENT',
+    strains:[
+      {name:'Gelato', thca:80, note:'Dense creamy flavor with dessert-like citrus and berry notes.'},
+      {name:'OG Kush', thca:82, note:'Bold gas, pine, and earth with a strong classic profile.'},
+      {name:'Sour Diesel', thca:81, note:'Loud diesel aroma with tart lemon and herbal sharpness.'},
+      {name:'Purple Haze', thca:79, note:'Grape candy and floral spice with a vivid, bright character.'},
+      {name:'Blue Dream', thca:78, note:'Blueberry sweetness with a smooth herbal finish.'},
+      {name:'White Widow', thca:80, note:'Woody spice and clean herb notes with balanced flavor.'}
+    ]
+  },
+  'tangerine-dream': {
+    id:'tangerine-dream', name:'Premium Flower Trim', desc:'THCA Trim — 1 Ounce (28g)', price:50,
+    image:'https://i0.wp.com/weedmaps.com/learn/wp-content/uploads/2026/02/image-66.png?fit=640%2C418&ssl=1', coaUrl:'#',
+    thca:'28%',
+    strains:[
+      {name:'ANY STRAIN AVAILABLE', thca:28, note:'Fresh tangerine peel and soft citrus sweetness in a loose flower-style trim.'}
+    ]
+  }
+};
+
+// ─── AGE GATE ───
+function verifyAge(ok) {
+  if (ok) {
+    document.getElementById('ageGate').style.display = 'none';
+    document.getElementById('mainSite').classList.remove('age-blur');
+    localStorage.setItem('d4d_age', '1');
+  } else {
+    document.getElementById('ageGate').style.display = 'none';
+    document.getElementById('ageDenied').style.display = 'flex';
+    setTimeout(function(){ window.location.href='https://google.com'; }, 2000);
+  }
+}
+
+// ─── TOAST ───
+function showToast(msg) {
+  var c = document.getElementById('toastContainer');
+  var t = document.createElement('div');
+  var dismissTimer;
+  t.className = 'toast-enter pointer-events-auto bg-brand-950 text-white text-sm px-5 py-3 rounded-xl shadow-2xl shadow-brand-950/25 border border-brand-700/60 flex items-center gap-2 cursor-default';
+  t.innerHTML = '<iconify-icon icon="mdi:check-circle" class="text-green-400"></iconify-icon> ' + msg;
+  t.addEventListener('mouseenter', function() { clearTimeout(dismissTimer); t.remove(); });
+  c.appendChild(t);
+  dismissTimer = setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(function(){ t.remove(); },300); }, 3000);
+}
+
+// ─── AUTH SYSTEM ───
+// LEGAL POPUP
+function openLegalPopup(type) {
+  var popup = document.getElementById('legalPopup');
+  var source = document.getElementById(type === 'tos' ? 'tos' : 'privacy');
+  if (!popup || !source) return;
+
+  var title = source.querySelector('h2');
+  var updated = source.querySelector('.text-xs.text-gray-400');
+  var body = source.querySelector('.prose');
+
+  document.getElementById('legalPopupEyebrow').textContent = 'Legal';
+  document.getElementById('legalPopupTitle').textContent = title ? title.textContent.trim() : 'Legal';
+  document.getElementById('legalPopupUpdated').textContent = updated ? updated.textContent.trim() : '';
+  document.getElementById('legalPopupBody').innerHTML = body ? body.innerHTML : '';
+
+  legalPopupBodyWasLocked = document.body.style.overflow === 'hidden';
+  popup.classList.remove('hidden');
+  popup.style.display = 'flex';
+  popup.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLegalPopup() {
+  var popup = document.getElementById('legalPopup');
+  if (!popup) return;
+  popup.classList.add('hidden');
+  popup.style.display = 'none';
+  popup.setAttribute('aria-hidden', 'true');
+  if (!legalPopupBodyWasLocked) document.body.style.overflow = '';
+}
+
+var D4D_PASSWORD_HASH_VERSION = 'p1';
+var D4D_PASSWORD_HASH_ITERATIONS = 180000;
+var d4dTextEncoder = new TextEncoder();
+
+function normalizeAuthEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
+function getFallbackNameFromEmail(email) {
+  var localPart = normalizeAuthEmail(email).split('@')[0] || 'Customer';
+  return localPart
+    .replace(/[._-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, function(ch) { return ch.toUpperCase(); }) || 'Customer';
+}
+
+function splitFullName(fullName) {
+  var parts = String(fullName || '').trim().replace(/\s+/g, ' ').split(' ').filter(Boolean);
+  return {
+    first_name: parts.shift() || '',
+    last_name: parts.join(' ')
+  };
+}
+
+function getUserDisplayName(user) {
+  if (!user) return 'Customer';
+  var meta = user.user_metadata || {};
+  var tableName = [user.first_name, user.last_name].filter(Boolean).join(' ');
+  var savedName = String(tableName || user.name || user.full_name || user.fullName || user.display_name || meta.full_name || meta.name || meta.display_name || '').trim();
+  return savedName || getFallbackNameFromEmail(user.email);
+}
+
+function getUserFirstName(user) {
+  return getUserDisplayName(user).split(/\s+/)[0] || 'Account';
+}
+
+function authUserToCurrentUser(user, fallbackName, fallbackEmail) {
+  var names = splitFullName(fallbackName || getUserDisplayName(user));
+  return {
+    id: user && user.id ? user.id : '',
+    first_name: (user && user.first_name) || names.first_name,
+    last_name: (user && user.last_name) || names.last_name,
+    name: String(fallbackName || getUserDisplayName(user) || 'Customer').trim(),
+    email: normalizeAuthEmail((user && user.email) || fallbackEmail),
+    created_at: (user && user.created_at) || ''
+  };
+}
+
+function dbUserToCurrentUser(user) {
+  return authUserToCurrentUser(user, getUserDisplayName(user), user && user.email);
+}
+
+function formatDate(value) {
+  if (!value) return '-';
+  var date = new Date(value);
+  if (isNaN(date.getTime())) return '-';
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function bytesToBase64Url(buffer) {
+  var bytes = new Uint8Array(buffer);
+  var binary = '';
+  for (var i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+async function makePasswordHash(email, password, iterations) {
+  if (!window.crypto || !window.crypto.subtle) {
+    throw new Error('Secure password hashing is not available in this browser. Please use a modern browser or open the site over HTTPS.');
+  }
+  var rounds = iterations || D4D_PASSWORD_HASH_ITERATIONS;
+  var keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    d4dTextEncoder.encode(password),
+    'PBKDF2',
+    false,
+    ['deriveBits']
+  );
+  var derivedBits = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt: d4dTextEncoder.encode('dream4delivery:' + normalizeAuthEmail(email)),
+      iterations: rounds,
+      hash: 'SHA-256'
+    },
+    keyMaterial,
+    256
+  );
+  return D4D_PASSWORD_HASH_VERSION + '$' + rounds + '$' + bytesToBase64Url(derivedBits);
+}
+
+function getLegacyBcrypt() {
+  if (window.bcrypt) return window.bcrypt;
+  if (window.dcodeIO && window.dcodeIO.bcrypt) return window.dcodeIO.bcrypt;
+  return null;
+}
+
+function compareLegacyBcrypt(password, savedHash) {
+  return new Promise(function(resolve, reject) {
+    var legacyBcrypt = getLegacyBcrypt();
+    if (!legacyBcrypt) {
+      reject(new Error('This older account uses a previous password format. Please create a new account or contact support.'));
+      return;
+    }
+    legacyBcrypt.compare(password, savedHash, function(err, same) {
+      if (err) reject(err);
+      else resolve(Boolean(same));
+    });
+  });
+}
+
+async function verifyPassword(email, password, savedHash) {
+  if (!savedHash) return false;
+  if (savedHash.indexOf(D4D_PASSWORD_HASH_VERSION + '$') === 0) {
+    var parts = savedHash.split('$');
+    var rounds = Number(parts[1]) || D4D_PASSWORD_HASH_ITERATIONS;
+    return savedHash === await makePasswordHash(email, password, rounds);
+  }
+  if (/^\$2[aby]\$/.test(savedHash)) {
+    return compareLegacyBcrypt(password, savedHash);
+  }
+  return savedHash === await makePasswordHash(email, password);
+}
+
+function openAuthModal(tab) {
+  var m = document.getElementById('authModal');
+  m.style.display = 'flex';
+  m.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  switchAuthTab(tab || 'login');
+  prefillAuthFromCheckout(tab || 'login');
+}
+
+function closeAuthModal() {
+  var m = document.getElementById('authModal');
+  m.style.display = 'none';
+  m.classList.add('hidden');
+  var checkoutOpen = document.getElementById('checkoutModal') && !document.getElementById('checkoutModal').classList.contains('hidden');
+  document.body.style.overflow = checkoutOpen ? 'hidden' : '';
+  document.getElementById('authLoginError').classList.add('hidden');
+  document.getElementById('authRegError').classList.add('hidden');
+}
+
+function prefillAuthFromCheckout(tab) {
+  var checkout = document.getElementById('checkoutModal');
+  if (!checkout || checkout.classList.contains('hidden')) return;
+  var checkoutName = document.getElementById('coName').value.trim();
+  var checkoutEmail = normalizeAuthEmail(document.getElementById('coEmail').value);
+  if (tab === 'register' && checkoutName) document.getElementById('authRegName').value = checkoutName;
+  if (checkoutEmail) {
+    document.getElementById(tab === 'register' ? 'authRegEmail' : 'authLoginEmail').value = checkoutEmail;
+  }
+}
+
+function openCheckoutAuth(tab) {
+  openAuthModal(tab || 'register');
+}
+
+function switchAuthTab(tab) {
+  var loginTab = document.getElementById('authTabLogin');
+  var regTab = document.getElementById('authTabRegister');
+  var loginForm = document.getElementById('authLoginForm');
+  var regForm = document.getElementById('authRegisterForm');
+  if (tab === 'login') {
+    loginTab.classList.add('active'); regTab.classList.remove('active');
+    loginForm.classList.remove('hidden'); regForm.classList.add('hidden');
+  } else {
+    regTab.classList.add('active'); loginTab.classList.remove('active');
+    regForm.classList.remove('hidden'); loginForm.classList.add('hidden');
+  }
+}
+
+async function handleRegister() {
+  var name = document.getElementById('authRegName').value.trim();
+  var email = normalizeAuthEmail(document.getElementById('authRegEmail').value);
+  var pass = document.getElementById('authRegPass').value;
+  var legalAgree = document.getElementById('authLegalAgree').checked;
+  var errEl = document.getElementById('authRegError');
+  var btn = document.getElementById('authRegBtn');
+  errEl.classList.add('hidden');
+  errEl.classList.remove('text-green-600');
+  errEl.classList.add('text-red-500');
+  if (!name || !email || !pass) { errEl.textContent='All fields required.'; errEl.classList.remove('hidden'); return; }
+  if (pass.length < 6) { errEl.textContent='Password must be at least 6 characters.'; errEl.classList.remove('hidden'); return; }
+  if (!legalAgree) { errEl.textContent='Please agree to the Terms of Service and Privacy Policy.'; errEl.classList.remove('hidden'); return; }
+  btn.disabled = true; btn.textContent = 'Creating...';
+  try {
+    var names = splitFullName(name);
+    var hashedPass = await makePasswordHash(email, pass);
+    var { data, error } = await supabaseClient.from('users').insert({
+      first_name: names.first_name,
+      last_name: names.last_name,
+      email: email,
+      password_hash: hashedPass
+    }).select('id, first_name, last_name, email, created_at').single();
+    if (error) {
+      if (error.code === '23505' || /duplicate|already exists/i.test(error.message || '')) throw new Error('An account already exists for this email.');
+      throw error;
+    }
+    currentUser = dbUserToCurrentUser(data);
+    localStorage.setItem('d4d_user', JSON.stringify(currentUser));
+    document.getElementById('authRegPass').value = '';
+    updateAuthUI();
+    closeAuthModal();
+    showToast('Account created! Welcome, ' + getUserFirstName(currentUser));
+  } catch(err) {
+    errEl.classList.remove('text-green-600');
+    errEl.classList.add('text-red-500');
+    errEl.textContent = err.message || 'Registration failed.';
+    errEl.classList.remove('hidden');
+  }
+  btn.disabled = false; btn.textContent = 'Create Account';
+}
+
+async function handleLogin() {
+  var email = normalizeAuthEmail(document.getElementById('authLoginEmail').value);
+  var pass = document.getElementById('authLoginPass').value;
+  var errEl = document.getElementById('authLoginError');
+  var btn = document.getElementById('authLoginBtn');
+  errEl.classList.add('hidden');
+  if (!email || !pass) { errEl.textContent='Email and password required.'; errEl.classList.remove('hidden'); return; }
+  btn.disabled = true; btn.textContent = 'Logging in...';
+  try {
+    var { data: users, error } = await supabaseClient.from('users')
+      .select('id, first_name, last_name, email, password_hash, created_at')
+      .eq('email', email)
+      .limit(1);
+    if (error) throw error;
+    if (!users || users.length === 0) { errEl.textContent='No account found with that email.'; errEl.classList.remove('hidden'); btn.disabled=false; btn.textContent='Login'; return; }
+    var user = users[0];
+    var match = await verifyPassword(email, pass, user.password_hash);
+    if (!match) { errEl.textContent='Incorrect password.'; errEl.classList.remove('hidden'); btn.disabled=false; btn.textContent='Login'; return; }
+    currentUser = dbUserToCurrentUser(user);
+    localStorage.setItem('d4d_user', JSON.stringify(currentUser));
+    document.getElementById('authLoginPass').value = '';
+    updateAuthUI();
+    closeAuthModal();
+    showToast('Welcome back, ' + getUserFirstName(currentUser));
+  } catch(err) {
+    errEl.textContent = err.message || 'Login failed.';
+    errEl.classList.remove('hidden');
+  }
+  btn.disabled = false; btn.textContent = 'Login';
+}
+
+function handleLogout() {
+  if (!confirm('Are you sure you want to log out?')) return;
+  currentUser = null;
+  accountOrders = [];
+  localStorage.removeItem('d4d_user');
+  updateAuthUI();
+  closeAccountModal();
+  showToast('Logged out');
+}
+
+function handleNavAccount() {
+  if (currentUser) { openAccountModal(); } else { openAuthModal(); }
+}
+
+function escapeHtml(value) {
+  var div = document.createElement('div');
+  div.textContent = String(value == null ? '' : value);
+  return div.innerHTML;
+}
+
+function openAccountModal() {
+  if (!currentUser) { openAuthModal('login'); return; }
+  renderAccountProfile();
+  var m = document.getElementById('accountModal');
+  m.classList.remove('hidden');
+  m.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  loadAccountOrders();
+}
+
+function closeAccountModal() {
+  var m = document.getElementById('accountModal');
+  if (!m) return;
+  m.classList.add('hidden');
+  m.style.display = 'none';
+  var checkoutOpen = document.getElementById('checkoutModal') && !document.getElementById('checkoutModal').classList.contains('hidden');
+  var authOpen = document.getElementById('authModal') && !document.getElementById('authModal').classList.contains('hidden');
+  document.body.style.overflow = (checkoutOpen || authOpen) ? 'hidden' : '';
+}
+
+function renderAccountProfile() {
+  if (!currentUser) return;
+  var displayName = getUserDisplayName(currentUser);
+  var initials = displayName.split(/\s+/).map(function(part){ return part.charAt(0); }).join('').slice(0, 2).toUpperCase() || 'D4';
+  document.getElementById('accountInitials').textContent = initials;
+  document.getElementById('accountName').textContent = displayName;
+  document.getElementById('accountEmail').textContent = currentUser.email || '';
+  document.getElementById('accountCreated').textContent = formatDate(currentUser.created_at);
+  renderAccountOrders(accountOrders);
+}
+
+function getOrderItemsCount(order) {
+  var items = order && order.items;
+  if (typeof items === 'string') {
+    try { items = JSON.parse(items); } catch(err) { items = []; }
+  }
+  if (!Array.isArray(items)) return 0;
+  return items.reduce(function(total, item) { return total + Number(item.qty || item.quantity || 1); }, 0);
+}
+
+function renderAccountOrders(orders) {
+  var list = document.getElementById('accountOrdersList');
+  if (!list) return;
+  var safeOrders = Array.isArray(orders) ? orders : [];
+  var totalSpent = safeOrders.reduce(function(sum, order) { return sum + Number(order.total || 0); }, 0);
+  document.getElementById('accountOrderCount').textContent = String(safeOrders.length);
+  document.getElementById('accountTotalSpent').textContent = '$' + totalSpent.toFixed(2);
+  if (safeOrders.length === 0) {
+    list.innerHTML = '<div class="p-5 text-sm text-gray-400">No orders yet.</div>';
+    return;
+  }
+  list.innerHTML = safeOrders.map(function(order) {
+    var orderId = escapeHtml(order.id || 'Order');
+    var status = escapeHtml(order.status || 'processing');
+    var shippingType = escapeHtml(order.shipping_type || 'standard');
+    var itemCount = getOrderItemsCount(order);
+    return '<div class="p-4 hover:bg-brand-50/50 transition-colors">' +
+      '<div class="flex flex-wrap items-start justify-between gap-3">' +
+        '<div>' +
+          '<p class="text-sm font-semibold text-brand-950">#' + orderId + '</p>' +
+          '<p class="text-[11px] text-gray-400 mt-1">' + formatDate(order.created_at) + ' &middot; ' + itemCount + ' item' + (itemCount === 1 ? '' : 's') + ' &middot; ' + shippingType + '</p>' +
+        '</div>' +
+        '<div class="text-right">' +
+          '<p class="text-sm font-semibold text-brand-950">$' + Number(order.total || 0).toFixed(2) + '</p>' +
+          '<span class="inline-flex mt-1 text-[10px] uppercase tracking-widest font-semibold text-brand-700 bg-brand-100 px-2 py-1 rounded-full">' + status + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function loadAccountOrders() {
+  var list = document.getElementById('accountOrdersList');
+  if (!currentUser || !list) return;
+  list.innerHTML = '<div class="p-5 text-sm text-gray-400">Loading orders...</div>';
+  try {
+    var query = supabaseClient.from('orders')
+      .select('id, email, name, phone, address, city, state, zip, items, subtotal, shipping_type, total, square_payment_id, status, created_at, user_id')
+      .order('created_at', { ascending: false })
+      .limit(20);
+    var filters = [];
+    if (currentUser.id) filters.push('user_id.eq.' + currentUser.id);
+    if (currentUser.email) filters.push('email.eq.' + currentUser.email);
+    if (filters.length > 0) query = query.or(filters.join(','));
+    var { data, error } = await query;
+    if (error) throw error;
+    accountOrders = data || [];
+    renderAccountOrders(accountOrders);
+  } catch(err) {
+    list.innerHTML = '<div class="p-5 text-sm text-red-500">Could not load orders: ' + escapeHtml(err.message || 'Unknown error') + '</div>';
+  }
+}
+
+async function hydrateCurrentUserFromTable() {
+  if (!currentUser || !currentUser.email) return;
+  try {
+    var { data: users, error } = await supabaseClient.from('users')
+      .select('id, first_name, last_name, email, created_at')
+      .eq('email', normalizeAuthEmail(currentUser.email))
+      .limit(1);
+    if (error) return;
+    if (!users || users.length === 0) {
+      currentUser = null;
+      localStorage.removeItem('d4d_user');
+      updateAuthUI();
+      return;
+    }
+    currentUser = dbUserToCurrentUser(users[0]);
+    localStorage.setItem('d4d_user', JSON.stringify(currentUser));
+    updateAuthUI();
+  } catch(err) {
+    console.warn('Could not refresh account from users table:', err);
+  }
+}
+
+function updateAuthUI() {
+  var navLabel = document.getElementById('navAccountLabel');
+  var mobLabel = document.getElementById('mobileAccountLabel');
+  if (currentUser) {
+    var shortName = getUserFirstName(currentUser);
+    navLabel.textContent = shortName;
+    mobLabel.textContent = shortName;
+  } else {
+    navLabel.textContent = 'Login';
+    mobLabel.textContent = 'Login / Register';
+  }
+  updateCheckoutAccountState();
+}
+
+function hasCheckoutAccount() {
+  return Boolean(currentUser && currentUser.email);
+}
+
+function updateCheckoutAccountState() {
+  var banner = document.getElementById('checkoutLoggedInBanner');
+  var required = document.getElementById('checkoutAccountRequired');
+  if (!banner || !required) return;
+  if (hasCheckoutAccount()) {
+    var displayName = getUserDisplayName(currentUser);
+    banner.classList.remove('hidden');
+    required.classList.add('hidden');
+    document.getElementById('checkoutLoggedInName').textContent = displayName;
+    document.getElementById('checkoutLoggedInEmail').textContent = currentUser.email;
+    document.getElementById('coName').value = displayName;
+    document.getElementById('coEmail').value = currentUser.email || '';
+  } else {
+    banner.classList.add('hidden');
+    required.classList.remove('hidden');
+  }
+}
+
+function requireCheckoutAccount(message) {
+  if (hasCheckoutAccount()) return true;
+  updateCheckoutAccountState();
+  showToast(message || 'Create an account or log in before checkout');
+  openCheckoutAuth('register');
+  return false;
+}
+
+// ─── CART ───
+function saveCart() { localStorage.setItem('d4d_cart', JSON.stringify(cart)); }
+function getCartTotal() { return cart.reduce(function(s,i){ return s + (i.price * i.qty); }, 0); }
+function getCartCount() { return cart.reduce(function(s,i){ return s + i.qty; }, 0); }
+
+function updateCartUI() {
+  var count = getCartCount();
+  var navEl = document.getElementById('cartCountNav');
+  var mobEl = document.getElementById('cartCountMobile');
+  if (count > 0) {
+    navEl.textContent = count; navEl.classList.remove('hidden');
+    mobEl.textContent = count; mobEl.classList.remove('hidden');
+  } else {
+    navEl.classList.add('hidden');
+    mobEl.classList.add('hidden');
+  }
+  var emptyEl = document.getElementById('emptyCart');
+  var listEl = document.getElementById('cartItemsList');
+  var footEl = document.getElementById('cartFooter');
+  if (cart.length === 0) {
+    emptyEl.classList.remove('hidden'); listEl.classList.add('hidden'); footEl.classList.add('hidden');
+  } else {
+    emptyEl.classList.add('hidden'); listEl.classList.remove('hidden'); footEl.classList.remove('hidden');
+    document.getElementById('cartSubtotal').textContent = '$' + getCartTotal().toFixed(2);
+    listEl.innerHTML = cart.map(function(item, i) {
+      return '<div class="flex gap-3 p-3 bg-brand-50/50 rounded-xl border border-brand-100">' +
+        '<img src="'+item.image+'" class="w-16 h-16 rounded-lg object-cover flex-shrink-0" alt="">' +
+        '<div class="flex-1 min-w-0">' +
+          '<p class="text-sm font-medium text-brand-900 truncate">'+item.name+'</p>' +
+          '<p class="text-[11px] text-gray-400">'+item.strain+' &middot; Qty: '+item.qty+'</p>' +
+          '<p class="text-sm font-semibold text-brand-900 mt-1">$'+(item.price * item.qty).toFixed(2)+'</p>' +
+        '</div>' +
+        '<button onclick="removeFromCart('+i+')" class="self-start w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center transition-colors flex-shrink-0">' +
+          '<iconify-icon icon="mdi:close" class="text-sm text-gray-400 hover:text-red-500"></iconify-icon>' +
+        '</button>' +
+      '</div>';
+    }).join('');
+  }
+}
+
+function removeFromCart(i) { cart.splice(i, 1); saveCart(); updateCartUI(); }
+
+function addToCart(productId, strain, qty) {
+  var p = PRODUCTS[productId];
+  if (!p || !strain) return;
+  var selectedStrain = (typeof strain === 'object') ? strain : { name: String(strain), thca: null };
+  cart.push({ id: productId, name: p.name, price: p.price, image: p.image, strain: selectedStrain.name, thca: selectedStrain.thca, qty: qty || 1 });
+  saveCart(); updateCartUI();
+  showToast(p.name + ' added to cart');
+  closeProductModal();
+}
+
+// ─── CART SIDEBAR ───
+function openCart() {
+  document.getElementById('cartOverlay').classList.remove('hidden');
+  var sb = document.getElementById('cartSidebar');
+  sb.classList.remove('hidden'); sb.style.display = 'flex';
+  sb.classList.add('cart-slide-in'); sb.classList.remove('cart-slide-out');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCart() {
+  var sb = document.getElementById('cartSidebar');
+  sb.classList.remove('cart-slide-in'); sb.classList.add('cart-slide-out');
+  setTimeout(function(){
+    document.getElementById('cartOverlay').classList.add('hidden');
+    sb.classList.add('hidden'); sb.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 300);
+}
+
+// ─── PRODUCT MODAL ───
+function openProductDetail(productId) {
+  var p = PRODUCTS[productId];
+  if (!p) return;
+  pmCurrentProduct = p; pmSelectedStrain = null; pmQty = 1;
+  document.getElementById('pmImage').src = p.image;
+  document.getElementById('pmName').textContent = p.name;
+  document.getElementById('pmDesc').textContent = p.desc;
+  document.getElementById('pmThcaBadge').textContent = 'THCa ' + p.thca;
+  document.getElementById('pmQty').textContent = pmQty;
+  document.getElementById('pmPrice').textContent = '$' + p.price.toFixed(2);
+  document.getElementById('pmStrains').innerHTML = p.strains.map(function(s, i) {
+    return '<button type="button" onclick="pmSelectStrain(this,'+i+')" class="strain-btn relative text-left border border-brand-200 rounded-xl px-4 py-4 hover:border-brand-500 hover:bg-brand-50 transition-all text-gray-600 bg-white overflow-hidden">' +
+      '<span class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-600 via-emerald-400 to-brand-300"></span>' +
+      '<span class="strain-check absolute top-3 right-3 opacity-0 scale-75 transition-all w-6 h-6 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-lg"><iconify-icon icon="mdi:check" class="text-sm"></iconify-icon></span>' +
+      '<span class="block text-base font-semibold text-brand-950 pr-8 leading-tight">'+escapeHtml(s.name)+'</span>' +
+      '<span class="block text-[11px] leading-relaxed text-gray-500 mt-2 pr-2">'+escapeHtml(s.note || 'Smooth, flavorful profile with a clean finish.')+'</span>' +
+      '<span class="strain-pill inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full mt-3 border border-brand-200 text-brand-600 bg-brand-50 transition-colors"><iconify-icon icon="mdi:sparkles" class="text-xs"></iconify-icon> Select</span>' +
+    '</button>';
+  }).join('');
+  var m = document.getElementById('productModal');
+  m.classList.remove('hidden'); m.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProductModal() {
+  var m = document.getElementById('productModal');
+  m.classList.add('hidden'); m.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function pmSelectStrain(btn, strainIndex) {
+  document.querySelectorAll('#pmStrains .strain-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  pmSelectedStrain = pmCurrentProduct && pmCurrentProduct.strains ? pmCurrentProduct.strains[strainIndex] : null;
+}
+
+function pmChangeQty(d) {
+  pmQty = Math.max(1, pmQty + d);
+  document.getElementById('pmQty').textContent = pmQty;
+  if (pmCurrentProduct) document.getElementById('pmPrice').textContent = '$' + (pmCurrentProduct.price * pmQty).toFixed(2);
+}
+
+function pmAddToCart() {
+  if (!pmSelectedStrain) { showToast('Please select a strain'); return; }
+  addToCart(pmCurrentProduct.id, pmSelectedStrain, pmQty);
+}
+
+// ─── CHECKOUT ───
+function openCheckout() {
+  if (cart.length === 0) { showToast('Your cart is empty'); return; }
+  closeCart();
+  coCurrentStep = 1; coCurrentTotal = 0; coCurrentOrderId = '';
+  stripeCardElement = null;
+  var m = document.getElementById('checkoutModal');
+  m.classList.remove('hidden'); m.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  // Reset to step 1
+  document.getElementById('coStepSuccess').classList.add('hidden');
+  document.getElementById('coStep1Dot').style.display = ''; document.getElementById('coStep1Dot').style.opacity = '1';
+  document.getElementById('coStep2Dot').style.display = ''; document.getElementById('coStep2Dot').style.opacity = '0.4';
+  document.getElementById('coStep3Dot').style.display = ''; document.getElementById('coStep3Dot').style.opacity = '0.4';
+  document.getElementById('coTitle').textContent = 'Checkout';
+  document.getElementById('coStep1').classList.remove('hidden');
+  document.getElementById('coStep2').classList.add('hidden');
+  document.getElementById('coStep3').classList.add('hidden');
+  document.getElementById('card-errors').textContent = '';
+  var payBtn = document.getElementById('coPayBtn'); payBtn.disabled = false;
+  document.getElementById('coPayBtnText').textContent = 'Pay Now';
+  updateCheckoutAccountState();
+}
+
+function closeCheckout() {
+  var m = document.getElementById('checkoutModal');
+  m.classList.add('hidden'); m.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function coShowStep(step) {
+  coCurrentStep = step;
+  ['coStep1','coStep2','coStep3'].forEach(function(id){ document.getElementById(id).classList.add('hidden'); });
+  document.getElementById('coStep' + step).classList.remove('hidden');
+  var backBtn = document.getElementById('coBackBtn');
+  if (step === 1) { backBtn.classList.add('hidden'); backBtn.style.display = 'none'; }
+  else { backBtn.classList.remove('hidden'); backBtn.style.display = 'flex'; }
+  for (var i = 1; i <= 3; i++) {
+    document.getElementById('coStep' + i + 'Dot').style.opacity = (i <= step) ? '1' : '0.4';
+  }
+}
+
+function coGoStep(step) {
+  if ((step === 2 || step === 3) && !requireCheckoutAccount('Create an account or log in before continuing')) return;
+  if (step === 2 && coCurrentStep === 1) {
+    var n = document.getElementById('coName').value.trim();
+    var e = document.getElementById('coEmail').value.trim();
+    var a = document.getElementById('coAddress').value.trim();
+    var c = document.getElementById('coCity').value.trim();
+    var s = document.getElementById('coState').value.trim();
+    var z = document.getElementById('coZip').value.trim();
+    if (!n||!e||!a||!c||!s||!z) { showToast('Please fill in all required fields'); return; }
+  }
+  if (step === 2) {
+    var subtotal = getCartTotal();
+    var shipVal = document.querySelector('input[name="shipping"]:checked').value;
+    var shipCost = shipVal === 'express' ? 10 : 5;
+    coCurrentTotal = subtotal + shipCost;
+    document.getElementById('coOrderItems').innerHTML = cart.map(function(item){
+      return '<div class="flex justify-between gap-3 text-sm py-1"><span class="text-gray-600">'+item.name+' ('+item.strain+') x'+item.qty+'</span><span class="font-medium whitespace-nowrap">$'+(item.price*item.qty).toFixed(2)+'</span></div>';
+    }).join('');
+    document.getElementById('coSubtotal').textContent = '$' + subtotal.toFixed(2);
+    document.getElementById('coShipping').textContent = '$' + shipCost.toFixed(2);
+    document.getElementById('coTotal').textContent = '$' + coCurrentTotal.toFixed(2);
+  }
+  if (step === 3) {
+    document.getElementById('coFinalTotal').textContent = '$' + coCurrentTotal.toFixed(2);
+    coCurrentOrderId = 'D4D-' + Date.now().toString(36).toUpperCase();
+    initStripeCardElement();
+  }
+  coShowStep(step);
+}
+
+function coGoBack() { if (coCurrentStep > 1) coGoStep(coCurrentStep - 1); }
+
+document.addEventListener('change', function(e) {
+  if (e.target.name === 'shipping' && coCurrentStep === 2) {
+    var subtotal = getCartTotal();
+    var shipCost = e.target.value === 'express' ? 10 : 5;
+    coCurrentTotal = subtotal + shipCost;
+    document.getElementById('coShipping').textContent = '$' + shipCost.toFixed(2);
+    document.getElementById('coTotal').textContent = '$' + coCurrentTotal.toFixed(2);
+  }
+});
+
+// ─── STRIPE CARD ELEMENT ───
+function initStripeCardElement() {
+  if (stripeCardElement) return;
+  try {
+    stripeElements = stripe.elements();
+    stripeCardElement = stripeElements.create('card', {
+      style: {
+        base: { fontFamily: 'Montserrat, sans-serif', fontSize: '15px', color: '#4c1d95', '::placeholder': { color: '#a78bfa' } },
+        invalid: { color: '#ef4444' }
+      }
+    });
+    stripeCardElement.mount('#card-element');
+    stripeCardElement.on('change', function(e) {
+      document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
+    });
+  } catch(err) {
+    console.error('Stripe init failed:', err);
+    document.getElementById('card-errors').textContent = 'Failed to load payment form. Refresh and try again.';
+  }
+}
+
+// ─── PROCESS PAYMENT ───
+async function processStripePayment() {
+  var payBtn = document.getElementById('coPayBtn');
+  var payBtnText = document.getElementById('coPayBtnText');
+  var cardErrors = document.getElementById('card-errors');
+  var name = document.getElementById('coName').value.trim();
+  var email = document.getElementById('coEmail').value.trim();
+  if (!hasCheckoutAccount()) {
+    cardErrors.textContent = 'Create an account or log in before payment.';
+    coGoStep(1);
+    openCheckoutAuth('register');
+    return;
+  }
+  if (!name || !email) { cardErrors.textContent = 'Missing name or email.'; return; }
+
+  payBtn.disabled = true;
+  payBtnText.innerHTML = '<span class="spinner"></span> Processing...';
+  cardErrors.textContent = '';
+
+  try {
+    // 1. Call Edge Function to create PaymentIntent
+    var { data, error: fnError } = await supabaseClient.functions.invoke('CreatePaymentIntent', {
+      body: {
+        amount: Math.round(coCurrentTotal * 100),
+        currency: 'usd',
+        metadata: { order_id: coCurrentOrderId, email: email }
+      }
+    });
+    if (fnError) throw fnError;
+    if (!data || !data.clientSecret) throw new Error('No client secret returned');
+
+    // 2. Confirm with Stripe — billing_details in payment_method ONLY
+    var result = await stripe.confirmCardPayment(data.clientSecret, {
+      payment_method: {
+        card: stripeCardElement,
+        billing_details: {
+          name: name,
+          email: email,
+          phone: document.getElementById('coPhone').value || undefined,
+          address: {
+            line1: document.getElementById('coAddress').value,
+            city: document.getElementById('coCity').value,
+            state: document.getElementById('coState').value,
+            postal_code: document.getElementById('coZip').value
+          }
+        }
+      }
+    });
+
+    if (result.error) {
+      cardErrors.textContent = result.error.message;
+      payBtn.disabled = false;
+      payBtnText.textContent = 'Pay Now';
+    } else if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
+      // Save order to DB using the existing orders table column names.
+      try {
+        var shippingType = document.querySelector('input[name="shipping"]:checked').value;
+        var orderPayload = {
+          id: coCurrentOrderId,
+          email: email,
+          name: name,
+          phone: document.getElementById('coPhone').value || '',
+          address: document.getElementById('coAddress').value,
+          city: document.getElementById('coCity').value,
+          state: document.getElementById('coState').value,
+          zip: document.getElementById('coZip').value,
+          items: cart,
+          subtotal: getCartTotal(),
+          shipping_type: shippingType,
+          total: coCurrentTotal,
+          square_payment_id: result.paymentIntent.id,
+          status: 'paid',
+          created_at: new Date().toISOString(),
+          user_id: currentUser ? currentUser.id : null,
+          coupoun: null
+        };
+        var { error: orderError } = await supabaseClient.from('orders').insert(orderPayload);
+        if (orderError && /coupoun|schema cache/i.test(orderError.message || '')) {
+          delete orderPayload.coupoun;
+          var retry = await supabaseClient.from('orders').insert(orderPayload);
+          orderError = retry.error;
+        }
+        if (orderError) throw orderError;
+      } catch(dbErr) {
+        console.error('Order save failed:', dbErr);
+      }
+
+      // Show success
+      document.getElementById('coStep1').classList.add('hidden');
+      document.getElementById('coStep2').classList.add('hidden');
+      document.getElementById('coStep3').classList.add('hidden');
+      document.getElementById('coStepSuccess').classList.remove('hidden');
+      document.getElementById('coOrderId').textContent = coCurrentOrderId;
+      document.getElementById('coTitle').textContent = 'Order Confirmed';
+      document.getElementById('coStep1Dot').style.display = 'none';
+      document.getElementById('coStep2Dot').style.display = 'none';
+      document.getElementById('coStep3Dot').style.display = 'none';
+      document.getElementById('coBackBtn').style.display = 'none';
+      cart = []; saveCart(); updateCartUI();
+    } else {
+      cardErrors.textContent = 'Payment status: ' + (result.paymentIntent ? result.paymentIntent.status : 'unknown');
+      payBtn.disabled = false; payBtnText.textContent = 'Pay Now';
+    }
+  } catch(err) {
+    console.error('Payment error:', err);
+    cardErrors.textContent = err.message || 'An error occurred. Please try again.';
+    payBtn.disabled = false; payBtnText.textContent = 'Pay Now';
+  }
+}
+
+// ─── MOBILE MENU ───
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('hidden');
+}
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded', function() {
+  updateCartUI();
+  updateAuthUI();
+  hydrateCurrentUserFromTable();
+  if (localStorage.getItem('d4d_age') === '1' || sessionStorage.getItem('d4d_age') === '1') {
+    document.getElementById('ageGate').style.display = 'none';
+    document.getElementById('mainSite').classList.remove('age-blur');
+  }
+  document.getElementById('productModal').addEventListener('click', function(e) { if (e.target === this) closeProductModal(); });
+  document.getElementById('checkoutModal').addEventListener('click', function(e) { if (e.target === this) closeCheckout(); });
+  document.getElementById('accountModal').addEventListener('click', function(e) { if (e.target === this) closeAccountModal(); });
+  document.getElementById('legalPopup').addEventListener('click', function(e) { if (e.target === this) closeLegalPopup(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !document.getElementById('accountModal').classList.contains('hidden')) {
+      closeAccountModal();
+    } else if (e.key === 'Escape' && !document.getElementById('legalPopup').classList.contains('hidden')) {
+      closeLegalPopup();
+    }
+  });
+});
+</script>
+
+</body>
+</html>
