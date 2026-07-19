@@ -9,7 +9,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
-<script src="https://js.stripe.com/v3/"></script>
 
 <script>
 const BRAND_ICON_URL = 'https://dream4delivery.com/727799034_17932282863320604_1853233446307954187_n.jpg'; // Paste your icon URL here, like: https://your-site.com/icon.ico
@@ -17,10 +16,8 @@ const SUPABASE_URL = 'https://lxsjuypssrpzzccgoeyo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4c2p1eXBzc3JwenpjY2dvZXlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2NTcyOTUsImV4cCI6MjA5ODIzMzI5NX0.TBqee4Ke_7hVhsVbdFV1SSkEUB6dPi9dcBwnsIDfCM8';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const STRIPE_PK = 'pk_live_51ToFo70Z73Yyr8mexdk5yqtBn6wWdiqACbqjKdZBMYt7O62egPU7NPnUbayB66Rk0nluFP9OFYAetGucrQsKmjTT00zUXa73EJ';
-const stripe = Stripe(STRIPE_PK);
-let stripeElements = null;
-let stripeCardElement = null;
+// Paste the public URL shown on your Cloudflare Worker page here.
+const IVNO_WORKER_URL = 'https://dream4delivery-ivno.ecclestonco.workers.dev/';
 </script>
 
 <script>
@@ -64,9 +61,6 @@ tailwind.config = {
   .product-card:hover .product-img { transform: scale(1.03); }
   .toast-enter { animation: fadein 0.4s ease-out forwards; }
   .spinner { width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block; }
-  #card-element { padding: 12px 14px; border: 1.5px solid #ddd6fe; border-radius: 12px; background: #faf9ff; transition: border-color 0.2s, box-shadow 0.2s; }
-  #card-element.StripeElement--focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
-  #card-element.StripeElement--invalid { border-color: #ef4444; }
   #card-errors { min-height: 20px; }
   .strain-btn { min-height: 118px; }
   .strain-btn.selected { border-color: #7c3aed; background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%); color: #4c1d95; font-weight: 600; box-shadow: 0 14px 30px rgba(124,58,237,0.16); transform: translateY(-1px); }
@@ -458,7 +452,7 @@ tailwind.config = {
         <div class="w-14 h-14 bg-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-600 transition-colors duration-300"><iconify-icon icon="mdi:credit-card-outline" class="text-brand-600 text-2xl group-hover:text-white transition-colors duration-300"></iconify-icon></div>
         <div class="text-[11px] font-semibold text-brand-400 uppercase tracking-[0.15em] mb-3">Step 02</div>
         <h3 class="font-serif text-lg font-500 text-brand-900 mb-3">Secure Checkout</h3>
-        <p class="text-sm text-gray-400 font-light leading-relaxed">Pay securely through Stripe. Your data is encrypted and never stored on our servers.</p>
+        <p class="text-sm text-gray-400 font-light leading-relaxed">Pay through Ivno's hosted crypto checkout. Payment credentials are handled by Ivno.</p>
       </div>
       <div class="bg-white rounded-2xl p-8 border border-brand-100 text-center hover:shadow-xl hover:shadow-brand-600/5 transition-all duration-500 group">
         <div class="w-14 h-14 bg-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-600 transition-colors duration-300"><iconify-icon icon="mdi:package-variant-closed" class="text-brand-600 text-2xl group-hover:text-white transition-colors duration-300"></iconify-icon></div>
@@ -494,7 +488,7 @@ tailwind.config = {
       </div>
       <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">2. Information We Collect</h3><p class="text-sm leading-relaxed">We may collect account details such as name, email, password credentials, phone number, delivery address, order details, age-verification confirmations, payment status, support messages, device data, browser data, usage activity, fraud-prevention data, and any instructions you provide for delivery.</p></div>
       <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">3. How We Use Information</h3><p class="text-sm leading-relaxed">We use information to create accounts, verify eligibility, process orders, coordinate delivery, communicate updates, provide customer support, prevent fraud, protect website security, comply with legal obligations, improve our services, and maintain business records.</p></div>
-      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">4. Payments and Service Providers</h3><p class="text-sm leading-relaxed">Payment card information is processed by Stripe. Dream4Delivery does not intentionally store full card numbers in this website. We may share information with vendors such as Supabase, Stripe, delivery partners, analytics providers, hosting providers, communications tools, compliance vendors, and professional advisors when needed to operate the service.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">4. Payments and Service Providers</h3><p class="text-sm leading-relaxed">Cryptocurrency checkout is processed by Ivno. Dream4Delivery does not request or store wallet private keys. We may share information with vendors such as Supabase, Ivno, delivery partners, analytics providers, hosting providers, communications tools, compliance vendors, and professional advisors when needed to operate the service.</p></div>
       <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">5. Local Storage, Cookies, and Security</h3><p class="text-sm leading-relaxed">This page uses browser storage for cart and login status. Passwords are hashed before being stored in the account database. We use reasonable safeguards designed to protect personal information, but no website, database, browser storage, or transmission method can be guaranteed to be completely secure.</p></div>
       <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">6. Sharing and Legal Compliance</h3><p class="text-sm leading-relaxed">We may disclose information when required by law, to protect rights and safety, to investigate fraud or misuse, to enforce our Terms, or as part of a business transaction such as a merger, acquisition, financing, or sale of assets.</p></div>
       <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">7. Your Choices and Privacy Rights</h3><p class="text-sm leading-relaxed">You may contact us to request access, correction, deletion, or a copy of personal information associated with your account. Depending on your location, you may have additional rights to know, delete, correct, limit certain uses, opt out of sale or sharing, and avoid discrimination for exercising privacy rights. We do not sell personal information in the ordinary meaning of that term.</p></div>
@@ -521,7 +515,7 @@ tailwind.config = {
       <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">2. Age Restriction</h3><p class="text-sm leading-relaxed">All users and purchasers must be twenty-one (21) years of age or older. Dream4Delivery reserves the right to request age verification at any time.</p></div>
       <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">3. 2018 Farm Bill Compliance</h3><p class="text-sm leading-relaxed">All products contain less than 0.3% Δ9-THC on a dry weight basis. THCA is a naturally occurring cannabinoid not classified as a controlled substance when derived from compliant hemp. COA documentation is available for all products.</p></div>
       <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">4. State & Local Law Disclaimer</h3><p class="text-sm leading-relaxed">Laws vary by state, county, and municipality. It is the customer's responsibility to determine legality in their jurisdiction.</p></div>
-      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">5. Payment — Stripe Integration</h3><p class="text-sm leading-relaxed">All payments are processed securely through Stripe, Inc. Dream4Delivery does not store or have access to your full credit card information. Payment data is handled by Stripe's PCI-DSS compliant infrastructure. By completing a purchase, you agree to Stripe's Terms of Service.</p></div>
+      <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">5. Payment — Ivno Integration</h3><p class="text-sm leading-relaxed">Cryptocurrency checkout is provided through Ivno's hosted payment flow. Dream4Delivery does not request or store wallet private keys. By completing a purchase, you also agree to Ivno's applicable checkout terms.</p></div>
       <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">6. Zero Interaction Delivery</h3><p class="text-sm leading-relaxed">All orders are delivered without direct human interaction. The customer assumes all risk for packages once delivered. Dream4Delivery is not responsible for lost, stolen, or misdelivered packages.</p></div>
       <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">7. Returns & Refunds</h3><p class="text-sm leading-relaxed">All sales are final. Contact us within 48 hours of delivery with photographic evidence for damaged/defective products.</p></div>
       <div><h3 class="font-serif text-lg font-500 text-brand-900 mb-3">8. Accounts and Security</h3><p class="text-sm leading-relaxed">You agree to provide accurate account information, protect your login credentials, and promptly notify us of unauthorized account activity. You are responsible for activity under your account unless caused by Dream4Delivery's proven breach of these Terms.</p></div>
@@ -622,7 +616,7 @@ tailwind.config = {
     <button onclick="openCheckout()" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium tracking-wide py-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-600/25 flex items-center justify-center gap-2">
       <iconify-icon icon="mdi:lock" class="text-base"></iconify-icon> Proceed to Checkout
     </button>
-    <p class="text-[10px] text-gray-400 text-center mt-3">Powered by Stripe &middot; Secure Payment</p>
+    <p class="text-[10px] text-gray-400 text-center mt-3">Powered by Ivno &middot; Hosted Crypto Checkout</p>
   </div>
 </div>
 
@@ -706,20 +700,29 @@ tailwind.config = {
     <!-- STEP 3 -->
     <div id="coStep3" class="p-5 space-y-4 hidden">
       <div class="bg-brand-50/60 border border-brand-100 rounded-xl p-4 space-y-3">
-        <p class="text-xs font-semibold text-brand-800 uppercase tracking-wider">Card Details</p>
-        <div id="card-element"></div>
+        <p class="text-xs font-semibold text-brand-800 uppercase tracking-wider">Cryptocurrency</p>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <label class="text-xs text-gray-600">Asset
+            <select id="coCryptoAsset" onchange="updateIvnoNetworks()" class="mt-1.5 w-full border border-brand-200 rounded-xl px-3 py-3 bg-white text-sm focus:outline-none focus:border-brand-500">
+              <option value="BTC">Bitcoin (BTC)</option><option value="ETH">Ethereum (ETH)</option><option value="SOL">Solana (SOL)</option><option value="USDT">Tether (USDT)</option><option value="USDC">USD Coin (USDC)</option><option value="LTC">Litecoin (LTC)</option><option value="XMR">Monero (XMR)</option><option value="BNB">BNB</option><option value="XRP">XRP</option><option value="DOGE">Dogecoin (DOGE)</option><option value="ADA">Cardano (ADA)</option><option value="TRX">Tron (TRX)</option>
+            </select>
+          </label>
+          <label class="text-xs text-gray-600">Network
+            <select id="coCryptoNetwork" class="mt-1.5 w-full border border-brand-200 rounded-xl px-3 py-3 bg-white text-sm focus:outline-none focus:border-brand-500"></select>
+          </label>
+        </div>
         <div id="card-errors" class="text-xs text-red-500"></div>
         <div class="flex items-center gap-2 text-[11px] text-gray-400 pt-1">
           <iconify-icon icon="mdi:lock" class="text-brand-500 text-sm"></iconify-icon>
-          Secured by Stripe — your card info never touches our servers
+          You will finish payment on Ivno's hosted checkout
         </div>
       </div>
       <div class="border border-brand-100 rounded-xl p-4">
         <div class="flex justify-between text-base font-semibold"><span class="text-brand-900">Total Charge</span><span id="coFinalTotal" class="text-brand-900">$0.00</span></div>
       </div>
-      <button id="coPayBtn" onclick="processStripePayment()" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium tracking-wide py-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-600/25 flex items-center justify-center gap-2">
+      <button id="coPayBtn" onclick="processIvnoPayment()" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium tracking-wide py-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-600/25 flex items-center justify-center gap-2">
         <iconify-icon icon="mdi:lock" class="text-base"></iconify-icon>
-        <span id="coPayBtnText">Pay Now</span>
+        <span id="coPayBtnText">Continue to Ivno</span>
       </button>
       <button onclick="coGoStep(2)" class="w-full text-gray-500 hover:text-brand-600 text-xs font-medium py-2 transition-colors flex items-center justify-center gap-1"><iconify-icon icon="mdi:arrow-left" class="text-sm"></iconify-icon> Back to Shipping</button>
       <p class="text-[10px] text-gray-400 text-center">By placing this order you agree to our <a href="javascript:void(0)" onclick="openLegalPopup('tos'); return false;" class="text-brand-600 underline">Terms of Service</a> and <a href="javascript:void(0)" onclick="openLegalPopup('privacy'); return false;" class="text-brand-600 underline">Privacy Policy</a>.</p>
@@ -1456,7 +1459,6 @@ function openCheckout() {
   if (cart.length === 0) { showToast('Your cart is empty'); return; }
   closeCart();
   coCurrentStep = 1; coCurrentTotal = 0; coCurrentOrderId = '';
-  stripeCardElement = null;
   var m = document.getElementById('checkoutModal');
   m.classList.remove('hidden'); m.style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -1471,7 +1473,7 @@ function openCheckout() {
   document.getElementById('coStep3').classList.add('hidden');
   document.getElementById('card-errors').textContent = '';
   var payBtn = document.getElementById('coPayBtn'); payBtn.disabled = false;
-  document.getElementById('coPayBtnText').textContent = 'Pay Now';
+  document.getElementById('coPayBtnText').textContent = 'Continue to Ivno';
   updateCheckoutAccountState();
 }
 
@@ -1519,7 +1521,7 @@ function coGoStep(step) {
   if (step === 3) {
     document.getElementById('coFinalTotal').textContent = '$' + coCurrentTotal.toFixed(2);
     coCurrentOrderId = 'D4D-' + Date.now().toString(36).toUpperCase();
-    initStripeCardElement();
+    updateIvnoNetworks();
   }
   coShowStep(step);
 }
@@ -1536,29 +1538,26 @@ document.addEventListener('change', function(e) {
   }
 });
 
-// ─── STRIPE CARD ELEMENT ───
-function initStripeCardElement() {
-  if (stripeCardElement) return;
-  try {
-    stripeElements = stripe.elements();
-    stripeCardElement = stripeElements.create('card', {
-      style: {
-        base: { fontFamily: 'Montserrat, sans-serif', fontSize: '15px', color: '#4c1d95', '::placeholder': { color: '#a78bfa' } },
-        invalid: { color: '#ef4444' }
-      }
-    });
-    stripeCardElement.mount('#card-element');
-    stripeCardElement.on('change', function(e) {
-      document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
-    });
-  } catch(err) {
-    console.error('Stripe init failed:', err);
-    document.getElementById('card-errors').textContent = 'Failed to load payment form. Refresh and try again.';
-  }
+// ─── IVNO CRYPTO CHECKOUT ───
+var IVNO_NETWORKS = {
+  BTC:['BTC'], ETH:['ETH'], SOL:['SOL'],
+  USDT:['TRX','ETH','POLYGON','BSC'],
+  USDC:['POLYGON','ETH','BSC','ARB','OP','SOL'],
+  LTC:['LTC'], XMR:['XMR'], BNB:['BNB'], XRP:['XRP'],
+  DOGE:['DOGE'], ADA:['ADA'], TRX:['TRX']
+};
+
+function updateIvnoNetworks() {
+  var assetEl = document.getElementById('coCryptoAsset');
+  var networkEl = document.getElementById('coCryptoNetwork');
+  if (!assetEl || !networkEl) return;
+  networkEl.innerHTML = (IVNO_NETWORKS[assetEl.value] || []).map(function(network) {
+    return '<option value="' + network + '">' + network + '</option>';
+  }).join('');
 }
 
-// ─── PROCESS PAYMENT ───
-async function processStripePayment() {
+// Create a pending order and redirect to Ivno. Only a verified webhook may mark it paid.
+async function processIvnoPayment() {
   var payBtn = document.getElementById('coPayBtn');
   var payBtnText = document.getElementById('coPayBtnText');
   var cardErrors = document.getElementById('card-errors');
@@ -1573,97 +1572,52 @@ async function processStripePayment() {
   if (!name || !email) { cardErrors.textContent = 'Missing name or email.'; return; }
 
   payBtn.disabled = true;
-  payBtnText.innerHTML = '<span class="spinner"></span> Processing...';
+  payBtnText.innerHTML = '<span class="spinner"></span> Creating checkout...';
   cardErrors.textContent = '';
 
   try {
-    // 1. Call Edge Function to create PaymentIntent
-    var { data, error: fnError } = await supabaseClient.functions.invoke('CreatePaymentIntent', {
-      body: {
-        amount: Math.round(coCurrentTotal * 100),
-        currency: 'usd',
-        metadata: { order_id: coCurrentOrderId, email: email }
-      }
-    });
-    if (fnError) throw fnError;
-    if (!data || !data.clientSecret) throw new Error('No client secret returned');
-
-    // 2. Confirm with Stripe — billing_details in payment_method ONLY
-    var result = await stripe.confirmCardPayment(data.clientSecret, {
-      payment_method: {
-        card: stripeCardElement,
-        billing_details: {
-          name: name,
-          email: email,
-          phone: document.getElementById('coPhone').value || undefined,
-          address: {
-            line1: document.getElementById('coAddress').value,
-            city: document.getElementById('coCity').value,
-            state: document.getElementById('coState').value,
-            postal_code: document.getElementById('coZip').value
-          }
-        }
-      }
-    });
-
-    if (result.error) {
-      cardErrors.textContent = result.error.message;
-      payBtn.disabled = false;
-      payBtnText.textContent = 'Pay Now';
-    } else if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
-      // Save order to DB using the existing orders table column names.
-      try {
-        var shippingType = document.querySelector('input[name="shipping"]:checked').value;
-        var orderPayload = {
-          id: coCurrentOrderId,
-          email: email,
-          name: name,
-          phone: document.getElementById('coPhone').value || '',
-          address: document.getElementById('coAddress').value,
-          city: document.getElementById('coCity').value,
-          state: document.getElementById('coState').value,
-          zip: document.getElementById('coZip').value,
-          items: cart,
-          subtotal: getCartTotal(),
-          shipping_type: shippingType,
-          total: coCurrentTotal,
-          square_payment_id: result.paymentIntent.id,
-          status: 'paid',
-          created_at: new Date().toISOString(),
-          user_id: currentUser ? currentUser.id : null,
-          coupoun: null
-        };
-        var { error: orderError } = await supabaseClient.from('orders').insert(orderPayload);
-        if (orderError && /coupoun|schema cache/i.test(orderError.message || '')) {
-          delete orderPayload.coupoun;
-          var retry = await supabaseClient.from('orders').insert(orderPayload);
-          orderError = retry.error;
-        }
-        if (orderError) throw orderError;
-      } catch(dbErr) {
-        console.error('Order save failed:', dbErr);
-      }
-
-      // Show success
-      document.getElementById('coStep1').classList.add('hidden');
-      document.getElementById('coStep2').classList.add('hidden');
-      document.getElementById('coStep3').classList.add('hidden');
-      document.getElementById('coStepSuccess').classList.remove('hidden');
-      document.getElementById('coOrderId').textContent = coCurrentOrderId;
-      document.getElementById('coTitle').textContent = 'Order Confirmed';
-      document.getElementById('coStep1Dot').style.display = 'none';
-      document.getElementById('coStep2Dot').style.display = 'none';
-      document.getElementById('coStep3Dot').style.display = 'none';
-      document.getElementById('coBackBtn').style.display = 'none';
-      cart = []; saveCart(); updateCartUI();
-    } else {
-      cardErrors.textContent = 'Payment status: ' + (result.paymentIntent ? result.paymentIntent.status : 'unknown');
-      payBtn.disabled = false; payBtnText.textContent = 'Pay Now';
+    if (!/^https:\/\/.+/.test(IVNO_WORKER_URL)) throw new Error('Store owner must configure the Cloudflare Worker URL.');
+    var shippingType = document.querySelector('input[name="shipping"]:checked').value;
+    var orderPayload = {
+      id: coCurrentOrderId, email: email, name: name,
+      phone: document.getElementById('coPhone').value || '',
+      address: document.getElementById('coAddress').value,
+      city: document.getElementById('coCity').value,
+      state: document.getElementById('coState').value,
+      zip: document.getElementById('coZip').value,
+      items: cart, subtotal: getCartTotal(), shipping_type: shippingType,
+      total: coCurrentTotal, square_payment_id: 'ivno_pending', status: 'pending_payment',
+      created_at: new Date().toISOString(), user_id: currentUser ? currentUser.id : null,
+      coupoun: null
+    };
+    var insertResult = await supabaseClient.from('orders').insert(orderPayload);
+    if (insertResult.error && /coupoun|schema cache/i.test(insertResult.error.message || '')) {
+      delete orderPayload.coupoun;
+      insertResult = await supabaseClient.from('orders').insert(orderPayload);
     }
+    if (insertResult.error) throw new Error('Could not save the pending order: ' + insertResult.error.message);
+
+    var response = await fetch(IVNO_WORKER_URL, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        order_id: coCurrentOrderId, email: email,
+        crypto_currency: document.getElementById('coCryptoAsset').value,
+        crypto_network: document.getElementById('coCryptoNetwork').value,
+        shipping_type: shippingType,
+        items: cart.map(function(item){ return { id:item.id, qty:item.qty }; })
+      })
+    });
+    var result = await response.json().catch(function(){ return {}; });
+    if (!response.ok || !result.payment_url) throw new Error(result.error || 'Ivno could not create the checkout.');
+    if (result.transaction_id) {
+      await supabaseClient.from('orders').update({ square_payment_id: String(result.transaction_id) }).eq('id', coCurrentOrderId);
+    }
+    sessionStorage.setItem('d4d_pending_order', coCurrentOrderId);
+    window.location.assign(result.payment_url);
   } catch(err) {
-    console.error('Payment error:', err);
+    console.error('Ivno payment error:', err);
     cardErrors.textContent = err.message || 'An error occurred. Please try again.';
-    payBtn.disabled = false; payBtnText.textContent = 'Pay Now';
+    payBtn.disabled = false; payBtnText.textContent = 'Continue to Ivno';
   }
 }
 
