@@ -17,7 +17,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Paste the public URL shown on your Cloudflare Worker page here.
-const IVNO_WORKER_URL = 'https://dream4delivery-ivno.ecclestonco.workers.dev/';
+const IVNO_WORKER_URL = 'PASTE_YOUR_CLOUDFLARE_WORKER_URL_HERE';
 </script>
 
 <script>
@@ -107,7 +107,7 @@ tailwind.config = {
 <!-- TOAST -->
 <div id="toastContainer" class="fixed top-6 right-6 z-[12000] flex flex-col gap-2 pointer-events-none"></div>
 
-<!-- AUTH MODAL -->
+<!-- Legacy account markup is disabled; checkout is guest-only. -->
 <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[8500] items-center justify-center p-4" style="display:none;">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm animate-fadeScale overflow-hidden">
     <div class="flex items-center justify-between px-6 py-4 border-b border-brand-100">
@@ -209,7 +209,6 @@ tailwind.config = {
     </div>
   </div>
 </div>
-
 <!-- MAIN SITE -->
 <div id="mainSite" class="age-blur">
 
@@ -227,10 +226,6 @@ tailwind.config = {
       <a href="#how-it-works" class="text-xs font-medium uppercase tracking-widest text-gray-500 hover:text-brand-600 transition-colors duration-300">How It Works</a>
       <button type="button" onclick="openLegalPopup('privacy')" class="text-xs font-medium uppercase tracking-widest text-gray-500 hover:text-brand-600 transition-colors duration-300">Privacy</button>
       <button type="button" onclick="openLegalPopup('tos')" class="text-xs font-medium uppercase tracking-widest text-gray-500 hover:text-brand-600 transition-colors duration-300">Terms</button>
-      <button id="navAccountBtn" onclick="handleNavAccount()" class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-gray-500 hover:text-brand-600 transition-colors duration-300">
-        <iconify-icon icon="mdi:account-circle-outline" class="text-base"></iconify-icon>
-        <span id="navAccountLabel">Login</span>
-      </button>
       <button onclick="openCart()" class="relative flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium uppercase tracking-widest px-5 py-2.5 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-brand-600/20">
         <iconify-icon icon="mdi:cart-outline" class="text-base"></iconify-icon> Cart
         <span id="cartCountNav" class="absolute -top-2 -right-2 w-5 h-5 bg-brand-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center hidden">0</span>
@@ -252,10 +247,6 @@ tailwind.config = {
       <a href="#how-it-works" onclick="toggleMobileMenu()" class="text-sm font-medium text-gray-700 hover:text-brand-600 py-2">How It Works</a>
       <button type="button" onclick="toggleMobileMenu(); openLegalPopup('privacy')" class="text-sm font-medium text-gray-700 hover:text-brand-600 py-2 text-left">Privacy Policy</button>
       <button type="button" onclick="toggleMobileMenu(); openLegalPopup('tos')" class="text-sm font-medium text-gray-700 hover:text-brand-600 py-2 text-left">Terms of Service</button>
-      <button onclick="toggleMobileMenu(); handleNavAccount()" class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-brand-600 py-2 text-left">
-        <iconify-icon icon="mdi:account-circle-outline" class="text-base"></iconify-icon>
-        <span id="mobileAccountLabel">Login / Register</span>
-      </button>
     </div>
   </div>
 </nav>
@@ -640,22 +631,9 @@ tailwind.config = {
 
     <!-- STEP 1 -->
     <div id="coStep1" class="p-5 space-y-4">
-      <div id="checkoutLoggedInBanner" class="hidden bg-brand-50 border border-brand-200 rounded-xl p-3 flex items-center gap-3">
-        <div class="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center flex-shrink-0"><iconify-icon icon="mdi:account" class="text-white text-sm"></iconify-icon></div>
-        <div><p class="text-xs font-medium text-brand-900" id="checkoutLoggedInName"></p><p class="text-[10px] text-brand-500" id="checkoutLoggedInEmail"></p></div>
-      </div>
-      <div id="checkoutAccountRequired" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-4">
-        <div class="flex items-start gap-3">
-          <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0"><iconify-icon icon="mdi:account-lock-outline" class="text-amber-600 text-lg"></iconify-icon></div>
-          <div class="flex-1">
-            <p class="text-xs font-semibold text-amber-900">Account required before purchase</p>
-            <p class="text-[11px] text-amber-700 mt-1 leading-relaxed">Create an account or log in before continuing to shipping and payment.</p>
-            <div class="flex flex-wrap gap-2 mt-3">
-              <button type="button" onclick="openCheckoutAuth('register')" class="bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-semibold px-4 py-2 rounded-lg transition-colors">Create Account</button>
-              <button type="button" onclick="openCheckoutAuth('login')" class="bg-white hover:bg-amber-100 text-amber-800 border border-amber-200 text-[11px] font-semibold px-4 py-2 rounded-lg transition-colors">Login</button>
-            </div>
-          </div>
-        </div>
+      <div class="bg-brand-50 border border-brand-200 rounded-xl p-3 flex items-center gap-3">
+        <iconify-icon icon="mdi:email-outline" class="text-brand-600 text-xl"></iconify-icon>
+        <p class="text-[11px] text-brand-700">No account is needed. Payment and order updates will be sent to your email.</p>
       </div>
       <div><label class="text-xs font-medium text-gray-700 mb-1.5 block">Full Name *</label><input id="coName" type="text" placeholder="John Doe" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all"></div>
       <div><label class="text-xs font-medium text-gray-700 mb-1.5 block">Email *</label><input id="coEmail" type="email" placeholder="you@email.com" class="w-full border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all"></div>
@@ -787,7 +765,6 @@ tailwind.config = {
 <script>
 // ─── GLOBAL STATE ───
 let cart = JSON.parse(localStorage.getItem('d4d_cart') || '[]');
-let currentUser = JSON.parse(localStorage.getItem('d4d_user') || 'null');
 let coCurrentTotal = 0;
 let coCurrentOrderId = '';
 let coCurrentStep = 1;
@@ -795,7 +772,6 @@ let pmCurrentProduct = null;
 let pmSelectedStrain = null;
 let pmQty = 1;
 let legalPopupBodyWasLocked = false;
-let accountOrders = [];
 
 // ─── PRODUCT DATA ───
 const PRODUCTS = {
@@ -1302,7 +1278,6 @@ function updateAuthUI() {
     navLabel.textContent = 'Login';
     mobLabel.textContent = 'Login / Register';
   }
-  updateCheckoutAccountState();
 }
 
 function hasCheckoutAccount() {
@@ -1474,7 +1449,6 @@ function openCheckout() {
   document.getElementById('card-errors').textContent = '';
   var payBtn = document.getElementById('coPayBtn'); payBtn.disabled = false;
   document.getElementById('coPayBtnText').textContent = 'Continue to Ivno';
-  updateCheckoutAccountState();
 }
 
 function closeCheckout() {
@@ -1496,7 +1470,6 @@ function coShowStep(step) {
 }
 
 function coGoStep(step) {
-  if ((step === 2 || step === 3) && !requireCheckoutAccount('Create an account or log in before continuing')) return;
   if (step === 2 && coCurrentStep === 1) {
     var n = document.getElementById('coName').value.trim();
     var e = document.getElementById('coEmail').value.trim();
@@ -1563,12 +1536,6 @@ async function processIvnoPayment() {
   var cardErrors = document.getElementById('card-errors');
   var name = document.getElementById('coName').value.trim();
   var email = document.getElementById('coEmail').value.trim();
-  if (!hasCheckoutAccount()) {
-    cardErrors.textContent = 'Create an account or log in before payment.';
-    coGoStep(1);
-    openCheckoutAuth('register');
-    return;
-  }
   if (!name || !email) { cardErrors.textContent = 'Missing name or email.'; return; }
 
   payBtn.disabled = true;
@@ -1587,7 +1554,7 @@ async function processIvnoPayment() {
       zip: document.getElementById('coZip').value,
       items: cart, subtotal: getCartTotal(), shipping_type: shippingType,
       total: coCurrentTotal, square_payment_id: 'ivno_pending', status: 'pending_payment',
-      created_at: new Date().toISOString(), user_id: currentUser ? currentUser.id : null,
+      created_at: new Date().toISOString(), user_id: null,
       coupoun: null
     };
     var insertResult = await supabaseClient.from('orders').insert(orderPayload);
@@ -1629,20 +1596,15 @@ function toggleMobileMenu() {
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded', function() {
   updateCartUI();
-  updateAuthUI();
-  hydrateCurrentUserFromTable();
   if (localStorage.getItem('d4d_age') === '1' || sessionStorage.getItem('d4d_age') === '1') {
     document.getElementById('ageGate').style.display = 'none';
     document.getElementById('mainSite').classList.remove('age-blur');
   }
   document.getElementById('productModal').addEventListener('click', function(e) { if (e.target === this) closeProductModal(); });
   document.getElementById('checkoutModal').addEventListener('click', function(e) { if (e.target === this) closeCheckout(); });
-  document.getElementById('accountModal').addEventListener('click', function(e) { if (e.target === this) closeAccountModal(); });
   document.getElementById('legalPopup').addEventListener('click', function(e) { if (e.target === this) closeLegalPopup(); });
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && !document.getElementById('accountModal').classList.contains('hidden')) {
-      closeAccountModal();
-    } else if (e.key === 'Escape' && !document.getElementById('legalPopup').classList.contains('hidden')) {
+    if (e.key === 'Escape' && !document.getElementById('legalPopup').classList.contains('hidden')) {
       closeLegalPopup();
     }
   });
